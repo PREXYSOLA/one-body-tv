@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Body TV — World Christian Streaming</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --gold:#FFD700;
+  --gold2:#FFA500;
+  --black:#000;
+  --dark:#0a0a0a;
+  --card:#111;
+  --border:#222;
+}
+body { background:var(--black); color:#fff; font-family:'Segoe UI',Arial,sans-serif; overflow-x:hidden; }
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:linear-gradient(to bottom,rgba(0,0,0,0.95),transparent);
+  padding:16px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  transition:background 0.3s;
+}
+nav.scrolled { background:rgba(0,0,0,0.97); border-bottom:1px solid #111; }
+.nav-logo { font-size:26px; font-weight:900; color:var(--gold); letter-spacing:3px; }
+.nav-logo span { color:#fff; font-weight:300; }
+.nav-links { display:flex; gap:24px; align-items:center; }
+.nav-links a { color:#ccc; text-decoration:none; font-size:14px; transition:color 0.2s; cursor:pointer; }
+.nav-links a:hover { color:var(--gold); }
+.nav-right { display:flex; gap:16px; align-items:center; }
+.nav-search { background:transparent; border:1px solid #444; border-radius:20px; padding:6px 16px; color:#fff; font-size:13px; outline:none; width:200px; }
+.nav-search:focus { border-color:var(--gold); }
+.live-dot { background:#ff0000; color:#fff; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:bold; animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* HERO */
+.hero {
+  height:100vh;
+  background:linear-gradient(135deg,#000 0%,#0a0500 40%,#000 100%);
+  display:flex; align-items:center;
+  padding:0 60px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background:url('https://images.unsplash.com/photo-1438232992991-995b671a1a61?w=1600&q=80') center/cover no-repeat;
+  opacity:0.12;
+}
+.hero::after {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(90deg,rgba(0,0,0,0.95) 40%,transparent 100%);
+}
+.hero-content { position:relative; z-index:2; max-width:580px; }
+.hero-tag { display:inline-block; background:var(--gold); color:#000; font-size:11px; font-weight:bold; padding:4px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:2px; }
+.hero h1 { font-size:58px; font-weight:900; line-height:1.1; margin-bottom:16px; }
+.hero h1 em { color:var(--gold); font-style:normal; }
+.hero p { font-size:18px; color:#ccc; line-height:1.6; margin-bottom:30px; max-width:460px; }
+.hero-btns { display:flex; gap:14px; flex-wrap:wrap; }
+.btn-primary {
+  background:var(--gold); color:#000;
+  padding:14px 32px; border-radius:50px;
+  font-size:16px; font-weight:bold; cursor:pointer; border:none;
+  transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-primary:hover { background:var(--gold2); transform:scale(1.04); }
+.btn-secondary {
+  background:rgba(255,255,255,0.1); color:#fff;
+  padding:14px 32px; border-radius:50px;
+  font-size:16px; font-weight:bold; cursor:pointer; border:2px solid rgba(255,255,255,0.3);
+  transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
+.hero-stats { display:flex; gap:40px; margin-top:40px; }
+.stat { text-align:left; }
+.stat-num { font-size:28px; font-weight:900; color:var(--gold); }
+.stat-lbl { font-size:12px; color:#888; margin-top:2px; }
+
+/* LIVE BANNER */
+.live-banner {
+  background:linear-gradient(90deg,#cc0000,#8b0000);
+  padding:12px 40px;
+  display:flex; align-items:center; gap:20px;
+  overflow:hidden;
+}
+.live-label { background:#fff; color:#cc0000; font-size:11px; font-weight:bold; padding:3px 10px; border-radius:4px; white-space:nowrap; }
+.live-ticker { font-size:13px; color:#fff; white-space:nowrap; animation:ticker 30s linear infinite; }
+@keyframes ticker { 0%{transform:translateX(100vw)} 100%{transform:translateX(-100%)} }
+
+/* SECTIONS */
+.section { padding:50px 40px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+.section-title { font-size:22px; font-weight:800; }
+.section-title span { color:var(--gold); }
+.see-all { color:var(--gold); font-size:13px; cursor:pointer; text-decoration:none; }
+.see-all:hover { text-decoration:underline; }
+
+/* CATEGORY PILLS */
+.categories { display:flex; gap:10px; flex-wrap:wrap; padding:20px 40px; border-bottom:1px solid #111; }
+.cat-pill {
+  background:#111; border:1px solid #222; color:#ccc;
+  padding:8px 20px; border-radius:24px; font-size:13px; cursor:pointer;
+  transition:all 0.2s; white-space:nowrap;
+}
+.cat-pill:hover, .cat-pill.active { background:var(--gold); color:#000; border-color:var(--gold); font-weight:bold; }
+
+/* CONTENT GRID */
+.content-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none; }
+.content-row::-webkit-scrollbar { display:none; }
+
+.content-card {
+  min-width:220px; max-width:220px;
+  background:var(--card);
+  border-radius:10px; overflow:hidden;
+  cursor:pointer; transition:all 0.25s;
+  border:1px solid var(--border);
+  flex-shrink:0;
+}
+.content-card:hover { transform:scale(1.06); border-color:#FFD70066; box-shadow:0 8px 30px rgba(255,215,0,0.15); }
+.card-thumb {
+  width:100%; height:130px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:48px; position:relative;
+  overflow:hidden;
+}
+.card-badge {
+  position:absolute; top:8px; left:8px;
+  background:#cc0000; color:#fff;
+  font-size:9px; font-weight:bold;
+  padding:2px 7px; border-radius:4px;
+}
+.card-badge.premium { background:var(--gold); color:#000; }
+.card-badge.new { background:#006600; }
+.card-info { padding:12px; }
+.card-title { font-size:13px; font-weight:bold; margin-bottom:4px; line-height:1.3; }
+.card-meta { font-size:11px; color:#888; }
+.card-nation { font-size:10px; color:var(--gold); margin-top:4px; }
+
+/* WIDE CARD */
+.wide-card {
+  min-width:320px; max-width:320px;
+  background:var(--card); border-radius:12px; overflow:hidden;
+  cursor:pointer; transition:all 0.25s; border:1px solid var(--border); flex-shrink:0;
+}
+.wide-card:hover { transform:scale(1.04); border-color:#FFD70066; }
+.wide-thumb { width:100%; height:170px; display:flex; align-items:center; justify-content:center; font-size:60px; position:relative; }
+.wide-info { padding:14px; }
+.wide-title { font-size:15px; font-weight:bold; margin-bottom:6px; }
+.wide-desc { font-size:12px; color:#888; line-height:1.5; margin-bottom:8px; }
+.wide-meta { display:flex; align-items:center; gap:10px; }
+.tag { background:#1a1a00; color:var(--gold); font-size:10px; padding:2px 8px; border-radius:10px; }
+
+/* FEATURED ROW */
+.featured-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.feat-card {
+  background:var(--card); border-radius:12px; overflow:hidden;
+  cursor:pointer; transition:all 0.25s; border:1px solid var(--border);
+}
+.feat-card:hover { transform:translateY(-4px); border-color:#FFD70066; }
+.feat-thumb { height:180px; display:flex; align-items:center; justify-content:center; font-size:70px; }
+.feat-info { padding:16px; }
+.feat-title { font-size:16px; font-weight:bold; margin-bottom:6px; }
+.feat-desc { font-size:12px; color:#888; line-height:1.5; }
+
+/* NATIONS SECTION */
+.nations-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+.nation-card {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:16px 10px; text-align:center; cursor:pointer; transition:all 0.2s;
+}
+.nation-card:hover { border-color:var(--gold); background:#1a1a00; }
+.nation-flag { font-size:30px; margin-bottom:6px; }
+.nation-name { font-size:11px; color:#ccc; }
+.nation-count { font-size:10px; color:var(--gold); margin-top:2px; }
+
+/* LIVE NOW */
+.live-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.live-card {
+  background:var(--card); border:1px solid #cc0000;
+  border-radius:12px; overflow:hidden; cursor:pointer; transition:all 0.2s; position:relative;
+}
+.live-card:hover { transform:scale(1.02); box-shadow:0 0 20px rgba(204,0,0,0.3); }
+.live-thumb { height:160px; display:flex; align-items:center; justify-content:center; font-size:56px; position:relative; }
+.live-indicator {
+  position:absolute; top:12px; right:12px;
+  background:#cc0000; color:#fff; font-size:10px; font-weight:bold;
+  padding:3px 10px; border-radius:4px;
+  display:flex; align-items:center; gap:5px;
+}
+.live-indicator::before { content:'●'; animation:pulse 1s infinite; }
+.live-info { padding:14px; }
+.live-title { font-size:15px; font-weight:bold; margin-bottom:4px; }
+.live-host { font-size:12px; color:var(--gold); margin-bottom:4px; }
+.live-viewers { font-size:11px; color:#888; }
+
+/* SUBSCRIBE BAND */
+.subscribe-band {
+  background:linear-gradient(135deg,#0a0800,#1a1400);
+  border-top:2px solid var(--gold); border-bottom:2px solid var(--gold);
+  padding:50px 40px; text-align:center;
+}
+.subscribe-band h2 { font-size:36px; font-weight:900; margin-bottom:12px; }
+.subscribe-band h2 span { color:var(--gold); }
+.subscribe-band p { color:#ccc; font-size:16px; margin-bottom:30px; }
+.plans { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
+.plan-card {
+  background:#111; border:1px solid #333; border-radius:16px;
+  padding:28px 24px; min-width:220px; text-align:center; transition:all 0.2s;
+}
+.plan-card.featured { border-color:var(--gold); background:#1a1400; }
+.plan-card:hover { transform:translateY(-4px); }
+.plan-name { font-size:14px; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.plan-price { font-size:36px; font-weight:900; color:var(--gold); margin-bottom:4px; }
+.plan-period { font-size:12px; color:#666; margin-bottom:16px; }
+.plan-features { list-style:none; margin-bottom:20px; }
+.plan-features li { font-size:13px; color:#ccc; padding:4px 0; border-bottom:1px solid #1a1a1a; }
+.plan-features li::before { content:'✓ '; color:var(--gold); }
+.plan-btn { background:var(--gold); color:#000; border:none; border-radius:30px; padding:10px 24px; font-size:14px; font-weight:bold; cursor:pointer; width:100%; }
+
+/* FOOTER */
+footer {
+  background:#050505; border-top:1px solid #111;
+  padding:40px; text-align:center;
+}
+.footer-logo { font-size:22px; font-weight:900; color:var(--gold); letter-spacing:3px; margin-bottom:12px; }
+.footer-links { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
+.footer-links a { color:#888; text-decoration:none; font-size:13px; }
+.footer-links a:hover { color:var(--gold); }
+.footer-copy { font-size:12px; color:#444; }
+
+/* MODAL PLAYER */
+.modal-overlay {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.92); align-items:center; justify-content:center;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:#0a0a0a; border:1px solid var(--gold);
+  border-radius:16px; width:90%; max-width:700px;
+  padding:30px; position:relative;
+}
+.modal-close {
+  position:absolute; top:16px; right:16px;
+  background:#222; color:#fff; border:none; border-radius:50%;
+  width:32px; height:32px; font-size:18px; cursor:pointer; line-height:32px; text-align:center;
+}
+.modal-title { font-size:22px; font-weight:bold; color:var(--gold); margin-bottom:8px; }
+.modal-meta { font-size:13px; color:#888; margin-bottom:20px; }
+.modal-player {
+  background:#000; border-radius:10px; height:200px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:64px; margin-bottom:20px; border:1px solid #222;
+  cursor:pointer; transition:all 0.2s;
+}
+.modal-player:hover { border-color:var(--gold); }
+.modal-desc { font-size:14px; color:#ccc; line-height:1.7; }
+
+/* SCROLL TOP */
+.scroll-top {
+  position:fixed; bottom:24px; right:24px;
+  background:var(--gold); color:#000;
+  border:none; border-radius:50%; width:44px; height:44px;
+  font-size:20px; cursor:pointer; display:none; z-index:99;
+  align-items:center; justify-content:center;
+}
+
+@media(max-width:768px){
+  nav { padding:12px 16px; }
+  .hero { padding:0 20px; }
+  .hero h1 { font-size:36px; }
+  .section { padding:30px 16px; }
+  .categories { padding:16px; }
+  .featured-grid { grid-template-columns:1fr; }
+  .nations-grid { grid-template-columns:repeat(3,1fr); }
+  .live-grid { grid-template-columns:1fr; }
+  .plans { flex-direction:column; align-items:center; }
+  .hero-stats { gap:20px; }
+  .live-banner { padding:10px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">ONE BODY <span>TV</span></div>
+  <div class="nav-links">
+    <a onclick="filterCat('all')">Home</a>
+    <a onclick="filterCat('sermon')">Sermons</a>
+    <a onclick="filterCat('music')">Gospel Music</a>
+    <a onclick="filterCat('live')">Live</a>
+    <a onclick="filterCat('docs')">Documentaries</a>
+    <a href="/listen.html">📖 Bible Broadcast</a>
+  </div>
+  <div class="nav-right">
+    <input class="nav-search" type="text" placeholder="🔍 Search content..." id="searchInput" oninput="searchContent()">
+    <div class="live-dot">● LIVE NOW</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">✝ WORLD CHRISTIAN STREAMING</div>
+    <h1>Stream the <em>Kingdom</em><br>From Every Nation</h1>
+    <p>Sermons, gospel music, live services, worship concerts, evangelism documentaries — from Africa, America, Europe and beyond. Non-stop. 24/7.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" onclick="openModal('featured')">▶ Watch Now — It's Free</a>
+      <a class="btn-secondary" href="#subscribe">👑 Go Premium</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">190+</div><div class="stat-lbl">Nations</div></div>
+      <div class="stat"><div class="stat-num">24/7</div><div class="stat-lbl">Live Stream</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Content</div></div>
+      <div class="stat"><div class="stat-num">Free</div><div class="stat-lbl">To Start</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE TICKER -->
+<div class="live-banner">
+  <div class="live-label">LIVE</div>
+  <div class="live-ticker">🔴 Sunday Service LIVE — House on the Rock Lagos &nbsp;&nbsp;&nbsp; 🎵 Mercy Chinwo Worship Concert &nbsp;&nbsp;&nbsp; 📖 Bible Reading — Genesis — Elder David &nbsp;&nbsp;&nbsp; 🎙 TD Jakes Sermon — "Your Season Is Now" &nbsp;&nbsp;&nbsp; 🌍 Global Prayer Summit — 190 Nations</div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="categories">
+  <div class="cat-pill active" onclick="filterCat('all',this)">All Content</div>
+  <div class="cat-pill" onclick="filterCat('live',this)">🔴 Live Now</div>
+  <div class="cat-pill" onclick="filterCat('sermon',this)">🎙 Sermons</div>
+  <div class="cat-pill" onclick="filterCat('music',this)">🎵 Gospel Music</div>
+  <div class="cat-pill" onclick="filterCat('worship',this)">🙌 Worship</div>
+  <div class="cat-pill" onclick="filterCat('kids',this)">👶 Kids & Family</div>
+  <div class="cat-pill" onclick="filterCat('docs',this)">🎬 Documentaries</div>
+  <div class="cat-pill" onclick="filterCat('prayer',this)">🙏 Prayer</div>
+  <div class="cat-pill" onclick="filterCat('africa',this)">🌍 Africa</div>
+  <div class="cat-pill" onclick="filterCat('diaspora',this)">✈ Diaspora</div>
+  <div class="cat-pill" onclick="filterCat('prophecy',this)">⚡ Prophecy</div>
+  <div class="cat-pill" onclick="filterCat('healing',this)">💊 Healing & Miracles</div>
+</div>
+
+<!-- LIVE NOW -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">🔴 <span>Live</span> Right Now</div>
+    <a class="see-all">View All Live →</a>
+  </div>
+  <div class="live-grid">
+    <div class="live-card" onclick="openModal('live1')">
+      <div class="live-thumb" style="background:linear-gradient(135deg,#1a0000,#330000);">
+        🕌
+        <div class="live-indicator">LIVE</div>
+      </div>
+      <div class="live-info">
+        <div class="live-title">Sunday Global Service</div>
+        <div class="live-host">One Body Church International</div>
+        <div class="live-viewers">👁 12,847 watching now</div>
+      </div>
+    </div>
+    <div class="live-card" onclick="openModal('live2')">
+      <div class="live-thumb" style="background:linear-gradient(135deg,#001a00,#003300);">
+        🎵
+        <div class="live-indicator">LIVE</div>
+      </div>
+      <div class="live-info">
+        <div class="live-title">Gospel Praise Night — Lagos</div>
+        <div class="live-host">Mercy Chinwo & Friends</div>
+        <div class="live-viewers">👁 8,221 watching now</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED CONTENT -->
+<div class="section" style="padding-top:0;">
+  <div class="section-header">
+    <div class="section-title">🌟 <span>Featured</span> This Week</div>
+    <a class="see-all">Browse All →</a>
+  </div>
+  <div class="featured-grid" id="featuredGrid">
+    <div class="feat-card" onclick="openModal('td')">
+      <div class="feat-thumb" style="background:linear-gradient(135deg,#0a0500,#1a0f00);">🎙</div>
+      <div class="feat-info">
+        <div class="feat-title">Your Season Is Now</div>
+        <div class="feat-desc">Bishop TD Jakes delivers a powerful word on divine timing and faith. 54 min • USA 🇺🇸</div>
+      </div>
+    </div>
+    <div class="feat-card" onclick="openModal('mercy')">
+      <div class="feat-thumb" style="background:linear-gradient(135deg,#000a05,#001a0f);">🎤</div>
+      <div class="feat-info">
+        <div class="feat-title">Elevated — Full Concert</div>
+        <div class="feat-desc">Mercy Chinwo live worship concert filmed in Port Harcourt, Nigeria. 1hr 42min • Nigeria 🇳🇬</div>
+      </div>
+    </div>
+    <div class="feat-card" onclick="openModal('doc')">
+      <div class="feat-thumb" style="background:linear-gradient(135deg,#05000a,#0f001a);">🎬</div>
+      <div class="feat-info">
+        <div class="feat-title">Unreached — The Documentary</div>
+        <div class="feat-desc">A powerful film following gospel missionaries across Northern Nigeria and the Sahel. 1hr 18min</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERMONS -->
+<div class="section" style="padding-top:0;">
+  <div class="section-header">
+    <div class="section-title">🎙 <span>Sermons</span> — World's Best Preachers</div>
+    <a class="see-all">See All Sermons →</a>
+  </div>
+  <div class="content-row">
+    <div class="content-card" onclick="openModal('s1')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0500,#1a0f00);">🎙<div class="card-badge">FREE</div></div>
+      <div class="card-info">
+        <div class="card-title">Faith That Moves Mountains</div>
+        <div class="card-meta">45 min • Sermon</div>
+        <div class="card-nation">🇺🇸 United States</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('s2')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#000a05,#001a10);">🙏<div class="card-badge new">NEW</div></div>
+      <div class="card-info">
+        <div class="card-title">The Blood Covenant</div>
+        <div class="card-meta">38 min • Sermon</div>
+        <div class="card-nation">🇳🇬 Nigeria</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('s3')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#05000a,#100020);">⚡<div class="card-badge premium">PREMIUM</div></div>
+      <div class="card-info">
+        <div class="card-title">Walking In Your Prophetic Destiny</div>
+        <div class="card-meta">1hr 2min • Sermon</div>
+        <div class="card-nation">🇬🇭 Ghana</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('s4')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0000,#1a0000);">🔥<div class="card-badge">FREE</div></div>
+      <div class="card-info">
+        <div class="card-title">Revival Fire — Azusa Revisited</div>
+        <div class="card-meta">52 min • Sermon</div>
+        <div class="card-nation">🇿🇦 South Africa</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('s5')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#000a0a,#001a1a);">✝<div class="card-badge new">NEW</div></div>
+      <div class="card-info">
+        <div class="card-title">Grace Greater Than Our Sin</div>
+        <div class="card-meta">41 min • Sermon</div>
+        <div class="card-nation">🇬🇧 United Kingdom</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('s6')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0a00,#1a1a00);">📖<div class="card-badge premium">PREMIUM</div></div>
+      <div class="card-info">
+        <div class="card-title">End Times Prophetic Word</div>
+        <div class="card-meta">1hr 15min • Prophecy</div>
+        <div class="card-nation">🇰🇪 Kenya</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOSPEL MUSIC -->
+<div class="section" style="padding-top:0;">
+  <div class="section-header">
+    <div class="section-title">🎵 <span>Gospel Music</span> & Worship</div>
+    <a class="see-all">Full Music Library →</a>
+  </div>
+  <div class="content-row">
+    <div class="content-card" onclick="openModal('m1')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#000a05,#002010);">🎤<div class="card-badge">FREE</div></div>
+      <div class="card-info">
+        <div class="card-title">Excess Love — Live</div>
+        <div class="card-meta">Gospel Music • 4:32</div>
+        <div class="card-nation">🇳🇬 Mercy Chinwo</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('m2')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0500,#201000);">🎸<div class="card-badge new">NEW</div></div>
+      <div class="card-info">
+        <div class="card-title">Way Maker — Worship Night</div>
+        <div class="card-meta">Worship • 6:15</div>
+        <div class="card-nation">🇳🇬 Sinach</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('m3')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#050010,#100025);">🎹<div class="card-badge premium">PREMIUM</div></div>
+      <div class="card-info">
+        <div class="card-title">Praise Medley — Accra 2026</div>
+        <div class="card-meta">Concert • 48 min</div>
+        <div class="card-nation">🇬🇭 Ghana</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('m4')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0000,#200010);">🥁<div class="card-badge">FREE</div></div>
+      <div class="card-info">
+        <div class="card-title">Holy Spirit — Spontaneous</div>
+        <div class="card-meta">Worship • 12:44</div>
+        <div class="card-nation">🇺🇸 Bethel Music</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('m5')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#000a10,#001530);">🎺<div class="card-badge new">NEW</div></div>
+      <div class="card-info">
+        <div class="card-title">Joyful Joyful — African Edition</div>
+        <div class="card-meta">Gospel • 5:20</div>
+        <div class="card-nation">🌍 Pan-Africa</div>
+      </div>
+    </div>
+    <div class="content-card" onclick="openModal('m6')">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#080a00,#151800);">🎙<div class="card-badge">FREE</div></div>
+      <div class="card-info">
+        <div class="card-title">Bless The Lord — Live Choir</div>
+        <div class="card-meta">Choir • 8:12</div>
+        <div class="card-nation">🇰🇪 Nairobi</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DOCUMENTARIES -->
+<div class="section" style="padding-top:0;">
+  <div class="section-header">
+    <div class="section-title">🎬 <span>Documentaries</span> & Films</div>
+    <a class="see-all">All Films →</a>
+  </div>
+  <div class="content-row">
+    <div class="wide-card" onclick="openModal('d1')">
+      <div class="wide-thumb" style="background:linear-gradient(135deg,#050010,#0f0025);">🌍</div>
+      <div class="wide-info">
+        <div class="wide-title">Unreached — The Documentary</div>
+        <div class="wide-desc">Following gospel missionaries across Northern Nigeria and the Sahel region. Powerful footage of faith under fire.</div>
+        <div class="wide-meta"><span class="tag">Documentary</span><span class="tag">🇳🇬 Nigeria</span><span class="tag">1hr 18min</span></div>
+      </div>
+    </div>
+    <div class="wide-card" onclick="openModal('d2')">
+      <div class="wide-thumb" style="background:linear-gradient(135deg,#0a0500,#1f0f00);">⛪</div>
+      <div class="wide-info">
+        <div class="wide-title">Church Without Walls</div>
+        <div class="wide-desc">The underground church movement across 12 nations. Where the gospel goes where no camera dares to follow.</div>
+        <div class="wide-meta"><span class="tag">Documentary</span><span class="tag">🌍 Global</span><span class="tag">1hr 32min</span></div>
+      </div>
+    </div>
+    <div class="wide-card" onclick="openModal('d3')">
+      <div class="wide-thumb" style="background:linear-gradient(135deg,#000a05,#001f10);">✈</div>
+      <div class="wide-info">
+        <div class="wide-title">Diaspora Faith</div>
+        <div class="wide-desc">African believers maintaining their faith across America, UK, Canada, and Europe. Extraordinary stories.</div>
+        <div class="wide-meta"><span class="tag">Documentary</span><span class="tag">✈ Diaspora</span><span class="tag">58 min</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NATIONS -->
+<div class="section" style="padding-top:0;">
+  <div class="section-header">
+    <div class="section-title">🌍 Content From <span>Every Nation</span></div>
+    <a class="see-all">All 190 Nations →</a>
+  </div>
+  <div class="nations-grid">
+    <div class="nation-card"><div class="nation-flag">🇳🇬</div><div class="nation-name">Nigeria</div><div class="nation-count">247 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇬🇭</div><div class="nation-name">Ghana</div><div class="nation-count">134 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇺🇸</div><div class="nation-name">USA</div><div class="nation-count">489 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇬🇧</div><div class="nation-name">UK</div><div class="nation-count">201 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇰🇪</div><div class="nation-name">Kenya</div><div class="nation-count">98 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇿🇦</div><div class="nation-name">South Africa</div><div class="nation-count">156 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇧🇷</div><div class="nation-name">Brazil</div><div class="nation-count">87 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇨🇦</div><div class="nation-name">Canada</div><div class="nation-count">112 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇮🇳</div><div class="nation-name">India</div><div class="nation-count">76 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇵🇭</div><div class="nation-name">Philippines</div><div class="nation-count">143 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🇧🇫</div><div class="nation-name">Burkina Faso</div><div class="nation-count">23 titles</div></div>
+    <div class="nation-card"><div class="nation-flag">🌍</div><div class="nation-name">190+ Nations</div><div class="nation-count">View All →</div></div>
+  </div>
+</div>
+
+<!-- SUBSCRIBE -->
+<div class="subscribe-band" id="subscribe">
+  <h2>Start Watching <span>Free.</span><br>Unlock the Kingdom.</h2>
+  <p>Free tier available. Premium unlocks full library, downloads, and exclusive content.</p>
+  <div class="plans">
+    <div class="plan-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-period">Forever Free</div>
+      <ul class="plan-features">
+        <li>Live Services</li>
+        <li>Selected Sermons</li>
+        <li>Bible Broadcast</li>
+        <li>Gospel Music</li>
+      </ul>
+      <button class="plan-btn" style="background:#333;color:#fff;">Start Free</button>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">$4.99</div>
+      <div class="plan-period">per month</div>
+      <ul class="plan-features">
+        <li>Everything in Free</li>
+        <li>Full Sermon Library</li>
+        <li>All Concerts & Films</li>
+        <li>Offline Downloads</li>
+        <li>4K Quality</li>
+        <li>No Ads</li>
+      </ul>
+      <button class="plan-btn">👑 Get Premium</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Church</div>
+      <div class="plan-price">$29</div>
+      <div class="plan-period">per month</div>
+      <ul class="plan-features">
+        <li>Everything in Premium</li>
+        <li>Unlimited Screens</li>
+        <li>Church Dashboard</li>
+        <li>Upload Your Content</li>
+        <li>Revenue Share</li>
+      </ul>
+      <button class="plan-btn" style="background:#333;color:#fff;">For Churches</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ONE BODY TV</div>
+  <p style="color:#666;font-size:13px;margin-bottom:16px;">The World Christian Streaming Platform • Reaching the Unreached Ministry</p>
+  <div class="footer-links">
+    <a href="#">About</a>
+    <a href="#">Preachers</a>
+    <a href="#">Artists</a>
+    <a href="#">Churches</a>
+    <a href="/listen.html">Bible Broadcast</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 Swelerion Global Inc. • One Body TV • All Rights Reserved</div>
+</footer>
+
+<!-- MODAL PLAYER -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modalTitle">Loading...</div>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-player" onclick="alert('Full video streaming coming soon. Subscribe to be notified!')">
+      <span id="modalEmoji">▶</span>
+    </div>
+    <div class="modal-desc" id="modalDesc"></div>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Nav scroll
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+  const st=document.getElementById('scrollTop');
+  st.style.display=window.scrollY>400?'flex':'none';
+});
+
+// Category filter
+function filterCat(cat,el){
+  if(el){ document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active')); el.classList.add('active'); }
+}
+
+// Search
+function searchContent(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.content-card,.wide-card,.feat-card').forEach(c=>{
+    const t=c.textContent.toLowerCase();
+    c.style.opacity=q&&!t.includes(q)?'0.3':'1';
+  });
+}
+
+// Modal content
+const MODALS = {
+  featured: {title:'One Body TV — Featured Content',emoji:'✝',meta:'World Christian Streaming Platform',desc:'Stream the best sermons, gospel music, worship concerts, and documentaries from 190+ nations. Free to start.'},
+  live1: {title:'Sunday Global Service — LIVE',emoji:'🕌',meta:'One Body Church International • Live Now • 12,847 watching',desc:'Join the live Sunday service streaming from One Body Church International. Worship, Word, and prayer — all nations welcome.'},
+  live2: {title:'Gospel Praise Night — Lagos',emoji:'🎵',meta:'Mercy Chinwo & Friends • Live Now • 8,221 watching',desc:'Live gospel praise night streaming from Lagos, Nigeria. Featuring Mercy Chinwo and guest artists.'},
+  td: {title:'Your Season Is Now',emoji:'🎙',meta:'Bishop TD Jakes • 54 min • USA 🇺🇸',desc:'A powerful message on divine timing, patience, and faith. Bishop TD Jakes delivers one of his most anointed sermons on recognizing and stepping into your God-appointed season.'},
+  mercy: {title:'Elevated — Full Concert',emoji:'🎤',meta:'Mercy Chinwo • 1hr 42min • Nigeria 🇳🇬',desc:'Mercy Chinwo live worship concert filmed in Port Harcourt, Nigeria. A full evening of pure anointed worship. Includes Excess Love, Chukwuoma, Obinasom, and more.'},
+  doc: {title:'Unreached — The Documentary',emoji:'🎬',meta:'Reaching the Unreached Ministry • 1hr 18min',desc:'A powerful documentary following gospel missionaries across Northern Nigeria and the Sahel region. Extraordinary footage of faith, sacrifice, and the unstoppable gospel.'},
+  d1: {title:'Unreached — The Documentary',emoji:'🌍',meta:'Nigeria • Documentary • 1hr 18min',desc:'Following gospel missionaries into the unreached communities of Northern Nigeria. Produced by Reaching the Unreached Ministry.'},
+  d2: {title:'Church Without Walls',emoji:'⛪',meta:'Global • Documentary • 1hr 32min',desc:'The underground church movement across 12 nations. Where the gospel goes where no camera dares to follow.'},
+  d3: {title:'Diaspora Faith',emoji:'✈',meta:'USA/UK/Canada/Europe • Documentary • 58 min',desc:'African believers maintaining their faith and culture across the diaspora. Extraordinary stories of identity, community, and unwavering faith.'},
+};
+['s1','s2','s3','s4','s5','s6'].forEach((k,i)=>{
+  const emojis=['🎙','🙏','⚡','🔥','✝','📖'];
+  const titles=['Faith That Moves Mountains','The Blood Covenant','Walking In Your Prophetic Destiny','Revival Fire — Azusa Revisited','Grace Greater Than Our Sin','End Times Prophetic Word'];
+  MODALS[k]={title:titles[i],emoji:emojis[i],meta:'Sermon • One Body TV',desc:'A powerful sermon message available on One Body TV. Subscribe for the full library of world-class preaching from every nation.'};
+});
+['m1','m2','m3','m4','m5','m6'].forEach((k,i)=>{
+  const emojis=['🎤','🎸','🎹','🥁','🎺','🎙'];
+  const titles=['Excess Love — Live','Way Maker — Worship Night','Praise Medley — Accra 2026','Holy Spirit — Spontaneous','Joyful Joyful — African Edition','Bless The Lord — Live Choir'];
+  MODALS[k]={title:titles[i],emoji:emojis[i],meta:'Gospel Music • One Body TV',desc:'Gospel music and worship available to stream on One Body TV. Free tier includes selected tracks. Premium unlocks the full music library.'};
+});
+
+function openModal(id){
+  const m=MODALS[id]||{title:'One Body TV',emoji:'✝',meta:'',desc:'Full streaming coming soon. Register for access.'};
+  document.getElementById('modalTitle').textContent=m.title;
+  document.getElementById('modalMeta').textContent=m.meta;
+  document.getElementById('modalEmoji').textContent=m.emoji;
+  document.getElementById('modalDesc').textContent=m.desc;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+</script>
+</body>
+</html>
