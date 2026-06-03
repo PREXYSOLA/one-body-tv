@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>One Body Bible — KJV | Reaching the Unreached Ministry</title>
+<meta name="description" content="Read, hear and share the Holy Bible. Free KJV Bible with AI voice reading, 16 languages, reading plans and devotionals. One Body Bible by Reaching the Unreached Ministry."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold-light:#F0D080;--dark:#0D0B09;--dark2:#1A1714;--dark3:#252018;
+  --text:#F0EBE0;--text-muted:#9A9080;--accent:#2A2218;--border:#2a2418;--red:#e05050;
+}
+body.light{--dark:#F5F0E8;--dark2:#EDE8DC;--dark3:#E4DDD0;--text:#1A1410;--text-muted:#6A6050;--accent:#DDD5C0;--border:#C8BFA8}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background 0.3s,color 0.3s}
+
+/* VOTD OVERLAY */
+.votd-overlay{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.97);backdrop-filter:blur(4px)}
+.votd-card{width:min(500px,93vw);background:linear-gradient(145deg,#1a1200,#2a1e00,#0d0b00);border:1px solid var(--gold);border-radius:20px;padding:2.5rem;text-align:center;position:relative;overflow:hidden}
+.votd-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.18),transparent 70%);pointer-events:none}
+.votd-cross{font-size:2.8rem;margin-bottom:0.8rem;display:block}
+.votd-label{font-size:0.65rem;letter-spacing:0.22em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem}
+.votd-verse{font-family:'Playfair Display',serif;font-size:1.3rem;line-height:1.9;color:var(--text);margin-bottom:1rem;font-style:italic}
+.votd-ref{color:var(--gold);font-size:0.9rem;font-weight:700;margin-bottom:0.8rem}
+.votd-streak{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);border-radius:30px;padding:0.4rem 1rem;display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--gold);margin-bottom:1.5rem}
+.votd-btn{background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D0B09;border:none;padding:0.9rem 2rem;border-radius:30px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;letter-spacing:0.05em;transition:all 0.2s}
+.votd-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,0.3)}
+.votd-skip{color:var(--text-muted);font-size:0.75rem;cursor:pointer;margin-top:1rem;display:block}
+.votd-ministry{font-size:0.6rem;color:var(--text-muted);margin-top:1.2rem;letter-spacing:0.1em}
+
+/* HEADER */
+header{background:var(--dark2);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:200;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:0.6rem;cursor:pointer;text-decoration:none}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#8B6914);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.logo-text{font-size:1rem;font-weight:700;letter-spacing:0.05em}
+.logo-text span{color:var(--gold)}
+.header-right{display:flex;align-items:center;gap:0.5rem}
+.search-box{background:var(--dark3);border:1px solid var(--border);border-radius:20px;padding:0.4rem 1rem;color:var(--text);font-size:0.82rem;width:160px;outline:none}
+.search-box::placeholder{color:var(--text-muted)}
+.search-box:focus{border-color:var(--gold)}
+.icon-btn{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:0.35rem 0.6rem;color:var(--text-muted);cursor:pointer;font-size:1rem;transition:all 0.2s;white-space:nowrap}
+.icon-btn:hover{color:var(--gold);border-color:var(--gold)}
+.streak-badge{background:linear-gradient(135deg,#8B6914,var(--gold));color:#0D0B09;border-radius:20px;padding:0.25rem 0.7rem;font-size:0.72rem;font-weight:700;display:flex;align-items:center;gap:0.3rem}
+.donate-btn{background:linear-gradient(135deg,#8B6914,var(--gold));color:#0D0B09;border:none;border-radius:20px;padding:0.3rem 0.9rem;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+.donate-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(201,168,76,0.4)}
+
+/* AUDIO BAR */
+.audio-bar{position:sticky;top:60px;left:0;right:0;background:linear-gradient(135deg,#1a1200,#0d1a00);border-bottom:1px solid rgba(201,168,76,0.3);padding:0.5rem 1.5rem;display:none;align-items:center;gap:1rem;z-index:150}
+.audio-bar.visible{display:flex}
+.audio-play-btn{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#0D0B09;font-weight:700}
+.audio-progress{flex:1;height:4px;background:rgba(201,168,76,0.2);border-radius:2px;cursor:pointer;position:relative}
+.audio-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.3s;width:0%}
+.audio-info{min-width:0;flex:1}
+.audio-title{font-size:0.78rem;color:var(--gold);font-weight:600}
+.audio-sub{font-size:0.66rem;color:var(--text-muted)}
+.audio-verse-indicator{font-size:0.68rem;background:rgba(201,168,76,0.15);color:var(--gold);padding:0.2rem 0.5rem;border-radius:10px;border:1px solid rgba(201,168,76,0.3);white-space:nowrap}
+.audio-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem}
+
+/* LAYOUT */
+.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 60px)}
+
+/* SIDEBAR */
+.sidebar{width:230px;background:var(--dark2);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#3a3020;border-radius:2px}
+.testament-header{padding:0.8rem 1rem 0.4rem;font-size:0.6rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;font-weight:700;border-top:1px solid var(--border)}
+.book-item{padding:0.45rem 1.2rem;cursor:pointer;font-size:0.84rem;color:var(--text-muted);transition:all 0.15s;display:flex;align-items:center;justify-content:space-between}
+.book-item:hover{background:var(--dark3);color:var(--text)}
+.book-item.active{background:var(--accent);color:var(--gold);border-left:3px solid var(--gold)}
+.book-read-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0;flex-shrink:0}
+.book-item.read .book-read-dot{opacity:1}
+
+/* CHAPTER NAV */
+.chapter-nav{width:68px;background:#111009;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:0.5rem}
+.chapter-nav::-webkit-scrollbar{width:2px}
+.chapter-btn{width:100%;padding:0.4rem;margin-bottom:0.2rem;background:var(--dark3);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:0.76rem;transition:all 0.2s;text-align:center}
+.chapter-btn:hover{background:var(--accent);color:var(--text)}
+.chapter-btn.active{background:var(--gold);color:var(--dark);font-weight:700;border-color:var(--gold)}
+.chapter-btn.read{border-color:rgba(201,168,76,0.4);color:rgba(201,168,76,0.7)}
+
+/* READER */
+.reader-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.reader-wrap::-webkit-scrollbar{width:5px}
+.reader-wrap::-webkit-scrollbar-thumb{background:#3a3020;border-radius:3px}
+.reader{padding:2rem 3rem;max-width:760px;margin:0 auto;width:100%}
+.book-chapter-title{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--gold);margin-bottom:0.2rem;font-weight:700}
+.book-chapter-sub{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem;padding-bottom:1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap}
+.progress-pill{background:var(--accent);border:1px solid var(--border);border-radius:20px;padding:0.15rem 0.6rem;font-size:0.68rem;color:var(--gold)}
+.verse-wrap{display:flex;gap:0.8rem;margin-bottom:0.7rem;padding:0.6rem;border-radius:8px;cursor:pointer;transition:all 0.2s;position:relative;border:1px solid transparent}
+.verse-wrap:hover{background:var(--accent)}
+.verse-wrap.highlighted-gold{background:#2a2010;border-color:rgba(201,168,76,0.35)}
+.verse-wrap.highlighted-blue{background:#0a1525;border-color:rgba(100,150,255,0.35)}
+.verse-wrap.highlighted-green{background:#0a1f0a;border-color:rgba(100,200,100,0.35)}
+.verse-wrap.bookmarked::after{content:'🔖';position:absolute;right:0.5rem;top:0.3rem;font-size:0.7rem}
+.verse-wrap.speaking{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.5)}
+.verse-num{color:var(--gold);font-size:0.72rem;font-weight:700;min-width:22px;padding-top:0.28rem;flex-shrink:0}
+.verse-text{font-family:'Playfair Display',serif;font-size:1.05rem;line-height:1.95;color:var(--text)}
+.verse-note{font-size:0.78rem;color:var(--gold);font-style:italic;margin-top:0.3rem;padding:0.3rem 0.5rem;background:rgba(201,168,76,0.08);border-radius:4px}
+.loading{color:var(--text-muted);font-size:0.9rem;padding:3rem;text-align:center}
+
+/* PLAN BANNER */
+.plan-banner{background:linear-gradient(135deg,#1a1200,#0d1a0d);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:0.9rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+.plan-progress-bar{flex:1;height:4px;background:var(--dark3);border-radius:2px;overflow:hidden}
+.plan-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.5s}
+.plan-text{font-size:0.77rem;color:var(--text-muted)}
+.plan-text strong{color:var(--gold)}
+
+/* CHAPTER NAV ARROWS */
+.chapter-nav-arrows{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 0 2rem;margin-top:1rem;border-top:1px solid var(--border)}
+.nav-arrow{background:var(--dark2);border:1px solid var(--border);color:var(--text-muted);padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;font-size:0.85rem;transition:all 0.2s}
+.nav-arrow:hover{border-color:var(--gold);color:var(--gold)}
+
+/* LOVE OFFERING BANNER */
+.love-offering-banner{background:linear-gradient(135deg,#1a1000,#2a1a00);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.lo-text{flex:1;min-width:200px}
+.lo-title{font-size:0.9rem;font-weight:700;color:var(--gold);margin-bottom:0.2rem}
+.lo-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.5}
+.lo-btn{background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D0B09;border:none;padding:0.6rem 1.2rem;border-radius:20px;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.lo-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(201,168,76,0.4)}
+
+/* BOTTOM BAR */
+.bottom-bar{background:var(--dark2);border-top:1px solid var(--border);padding:0.65rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.devo-icon{font-size:1.2rem;flex-shrink:0}
+.devo-text{flex:1;min-width:0}
+.devo-label{font-size:0.62rem;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.1rem}
+.devo-quote{font-size:0.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic;font-family:'Playfair Display',serif}
+.devo-btn{background:var(--gold);color:var(--dark);padding:0.4rem 0.9rem;border-radius:20px;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
+
+/* VERSE TOOLBAR */
+.verse-toolbar{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--border);border-radius:30px;padding:0.4rem 0.8rem;display:none;align-items:center;gap:0.5rem;z-index:300;box-shadow:0 4px 30px rgba(0,0,0,0.5)}
+.verse-toolbar.open{display:flex}
+.hl-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform 0.2s}
+.hl-dot:hover{transform:scale(1.2)}
+.vt-btn{background:var(--dark3);border:1px solid var(--border);color:var(--text-muted);padding:0.3rem 0.7rem;border-radius:20px;font-size:0.75rem;cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.vt-btn:hover{color:var(--text);border-color:var(--gold)}
+.vt-sep{width:1px;height:20px;background:var(--border)}
+
+/* PANELS */
+.panel{position:fixed;right:-360px;top:60px;bottom:60px;width:340px;background:var(--dark2);border-left:1px solid var(--border);z-index:250;overflow-y:auto;transition:right 0.3s;padding:1.2rem}
+.panel.open{right:0}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border)}
+.panel-title{font-size:0.9rem;font-weight:700;color:var(--gold)}
+.panel-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem}
+
+/* AUDIO PANEL */
+.voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem}
+.voice-card{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:0.8rem;cursor:pointer;transition:all 0.2s;text-align:center}
+.voice-card:hover,.voice-card.active{border-color:var(--gold);background:var(--accent)}
+.voice-card.active .voice-name{color:var(--gold)}
+.voice-icon{font-size:1.5rem;margin-bottom:0.3rem}
+.voice-name{font-size:0.78rem;font-weight:600;margin-bottom:0.1rem}
+.voice-desc{font-size:0.68rem;color:var(--text-muted)}
+.speed-row{display:flex;gap:0.5rem;margin-bottom:1rem}
+.speed-btn{flex:1;background:var(--dark3);border:1px solid var(--border);color:var(--text-muted);padding:0.4rem;border-radius:6px;font-size:0.78rem;cursor:pointer;text-align:center;transition:all 0.2s}
+.speed-btn.active,.speed-btn:hover{border-color:var(--gold);color:var(--gold)}
+.play-chapter-btn{width:100%;background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D0B09;border:none;padding:0.8rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:0.5rem;transition:all 0.2s}
+.play-chapter-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(201,168,76,0.3)}
+.youtube-mode-btn{width:100%;background:var(--dark3);border:1px solid #FF0000;color:#FF4444;padding:0.7rem;border-radius:10px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+.youtube-mode-btn:hover{background:#1a0000;box-shadow:0 4px 15px rgba(255,0,0,0.2)}
+
+/* YOUTUBE BROADCAST MODE */
+.yt-overlay{position:fixed;inset:0;z-index:5000;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center}
+.yt-overlay.active{display:flex}
+.yt-header{position:absolute;top:0;left:0;right:0;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.yt-logo{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);display:flex;align-items:center;gap:0.5rem}
+.yt-close{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.4rem 1rem;border-radius:20px;cursor:pointer;font-size:0.8rem}
+.yt-body{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;max-width:900px;width:100%;min-height:100vh}
+.yt-cross{font-size:3rem;color:var(--gold);margin-bottom:1rem;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.yt-book-ref{font-size:0.8rem;letter-spacing:0.3em;color:rgba(201,168,76,0.7);text-transform:uppercase;margin-bottom:2rem;font-family:'Inter',sans-serif}
+.yt-verse-num{font-size:0.85rem;color:var(--gold);margin-bottom:0.8rem;font-family:'Inter',sans-serif;font-weight:600}
+.yt-verse-text{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2.4rem);line-height:1.8;color:#fff;max-width:800px;font-style:italic;transition:opacity 0.5s}
+.yt-verse-text.fade{opacity:0}
+.yt-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(201,168,76,0.15)}
+.yt-progress-fill{height:100%;background:var(--gold);transition:width 0.5s}
+.yt-controls{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;gap:1rem;align-items:center}
+.yt-ctrl-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.5rem 1.2rem;border-radius:20px;cursor:pointer;font-size:0.82rem;transition:all 0.2s}
+.yt-ctrl-btn:hover{background:rgba(201,168,76,0.2);border-color:var(--gold);color:var(--gold)}
+.yt-ctrl-btn.primary{background:var(--gold);color:#000;border-color:var(--gold)}
+.yt-ministry{position:absolute;bottom:5rem;left:50%;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,0.3);letter-spacing:0.15em;white-space:nowrap}
+
+/* DONATION MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{width:min(480px,93vw);background:var(--dark2);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);margin-bottom:0.3rem;font-weight:700}
+.modal-sub{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+.amount-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1rem}
+.amount-btn{background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:0.7rem;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:600;transition:all 0.2s;text-align:center}
+.amount-btn:hover,.amount-btn.active{border-color:var(--gold);background:var(--accent);color:var(--gold)}
+.modal-input{width:100%;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:0.7rem 1rem;border-radius:10px;font-size:0.9rem;outline:none;margin-bottom:1rem}
+.modal-input:focus{border-color:var(--gold)}
+.modal-submit{width:100%;background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D0B09;border:none;padding:0.9rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:1rem}
+.modal-submit:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,0.4)}
+.modal-secure{font-size:0.72rem;color:var(--text-muted);text-align:center;display:flex;align-items:center;justify-content:center;gap:0.4rem}
+.impact-list{margin-bottom:1.5rem}
+.impact-item{display:flex;align-items:flex-start;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid var(--border)}
+.impact-item:last-child{border-bottom:none}
+.impact-icon{font-size:1.2rem;flex-shrink:0}
+.impact-text{font-size:0.82rem;color:var(--text-muted);line-height:1.5}
+.impact-text strong{color:var(--text);display:block}
+
+/* BOOKMARK / PLANS panel items */
+.bm-item{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:0.8rem;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s}
+.bm-item:hover{border-color:var(--gold)}
+.bm-ref{font-size:0.72rem;color:var(--gold);font-weight:600;margin-bottom:0.3rem}
+.bm-text{font-family:'Playfair Display',serif;font-size:0.85rem;font-style:italic;color:var(--text-muted)}
+.rp-card{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:0.6rem;cursor:pointer;transition:all 0.2s}
+.rp-card:hover,.rp-card.active{border-color:var(--gold)}
+.rp-name{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:0.2rem}
+.rp-desc{font-size:0.76rem;color:var(--text-muted);margin-bottom:0.5rem;line-height:1.4}
+.rp-bar{height:4px;background:var(--dark);border-radius:2px;overflow:hidden}
+.rp-fill{height:100%;background:var(--gold);border-radius:2px}
+
+/* NOTE PANEL */
+.note-label{font-size:0.75rem;color:var(--gold);margin-bottom:0.4rem;font-weight:600}
+.note-ref{font-family:'Playfair Display',serif;font-style:italic;font-size:0.88rem;color:var(--text-muted);margin-bottom:0.8rem;padding:0.5rem;background:var(--dark3);border-radius:6px;border-left:2px solid var(--gold);line-height:1.6}
+.note-input{width:100%;min-height:150px;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:0.8rem;border-radius:10px;font-size:0.88rem;outline:none;resize:vertical;font-family:'Inter',sans-serif;line-height:1.6}
+.note-input:focus{border-color:var(--gold)}
+.note-save-btn{width:100%;background:var(--gold);color:#0D0B09;border:none;padding:0.7rem;border-radius:8px;font-weight:700;cursor:pointer;margin-top:0.6rem}
+
+/* WALLPAPER PANEL */
+.wp-preview{width:100%;aspect-ratio:4/3;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:1.5rem;margin-bottom:1rem;text-align:center}
+.wp-bg-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:1rem}
+.wp-bg-btn{height:36px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+.wp-bg-btn.active{border-color:var(--gold);transform:scale(1.05)}
+.wp-dl-btn{width:100%;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:0.7rem;border-radius:8px;font-size:0.85rem;cursor:pointer;font-weight:600;margin-bottom:0.5rem;transition:all 0.2s}
+.wp-dl-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar,.chapter-nav{display:none}
+  .sidebar.mobile-open,.chapter-nav.mobile-open{display:block;position:fixed;left:0;top:60px;bottom:60px;z-index:200}
+  .chapter-nav.mobile-open{left:0;width:68px}
+  .sidebar.mobile-open{left:68px;width:220px}
+  .reader{padding:1.2rem 1rem}
+  .search-box{width:120px}
+  .panel{width:100%;right:-100%;bottom:0}
+  header .donate-btn{display:none}
+}
+.mobile-overlay{display:none;position:fixed;inset:0;top:60px;background:rgba(0,0,0,0.5);z-index:190}
+.mobile-overlay.open{display:block}
+.mobile-tab-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--dark2);border-top:1px solid var(--border);height:56px;z-index:200}
+@media(max-width:768px){.mobile-tab-bar{display:flex}.bottom-bar{display:none}}
+.tab-btn{flex:1;background:none;border:none;color:var(--text-muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.15rem;font-size:0.6rem;transition:color 0.2s}
+.tab-btn.active{color:var(--gold)}
+.tab-icon{font-size:1.1rem}
+
+/* TOAST */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--gold);color:var(--text);padding:0.5rem 1.2rem;border-radius:20px;font-size:0.8rem;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- VERSE OF THE DAY OVERLAY -->
+<div class="votd-overlay" id="votdOverlay">
+  <div class="votd-card">
+    <span class="votd-cross">✝</span>
+    <div class="votd-label">Verse of the Day</div>
+    <div class="votd-verse" id="votdVerse">"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."</div>
+    <div class="votd-ref" id="votdRef">John 3:16 KJV</div>
+    <div class="votd-streak" id="votdStreak">🔥 <span id="streakCount">0</span> day streak</div>
+    <button class="votd-btn" onclick="closeVOTD()">Open the Word ✝</button>
+    <span class="votd-skip" onclick="closeVOTD()">Skip for now</span>
+    <div class="votd-ministry">One Body Bible · Reaching the Unreached Ministry · onebodybible.com</div>
+  </div>
+</div>
+
+<!-- DONATION MODAL -->
+<div class="modal-overlay" id="donateModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('donateModal')">✕</button>
+    <div class="modal-title">📖 Love Offering</div>
+    <div class="modal-sub">Every gift helps us print physical Bibles for Africa and fund the Reaching the Unreached Ministry. This platform is free — your love makes it possible.</div>
+    <div class="impact-list">
+      <div class="impact-item"><span class="impact-icon">📖</span><div class="impact-text"><strong>$5</strong>Prints one Bible for a village in Africa</div></div>
+      <div class="impact-item"><span class="impact-icon">🌍</span><div class="impact-text"><strong>$25</strong>Funds Bible distribution to 5 unreached families</div></div>
+      <div class="impact-item"><span class="impact-icon">✝</span><div class="impact-text"><strong>$100</strong>Sponsors a full village Bible outreach package</div></div>
+    </div>
+    <div class="amount-grid">
+      <div class="amount-btn" onclick="setAmount(5)">$5</div>
+      <div class="amount-btn" onclick="setAmount(10)">$10</div>
+      <div class="amount-btn" onclick="setAmount(25)">$25</div>
+      <div class="amount-btn" onclick="setAmount(50)">$50</div>
+      <div class="amount-btn" onclick="setAmount(100)">$100</div>
+      <div class="amount-btn" onclick="setAmount(0)">Other</div>
+    </div>
+    <input class="modal-input" id="donateAmount" type="number" placeholder="Enter amount (USD)" value="25"/>
+    <input class="modal-input" id="donateName" type="text" placeholder="Your name (optional)"/>
+    <input class="modal-input" id="donateEmail" type="email" placeholder="Email for receipt (optional)"/>
+    <button class="modal-submit" onclick="submitDonation()">Give a Love Offering 💛</button>
+    <div class="modal-secure">🔒 Secure · 100% goes to ministry</div>
+  </div>
+</div>
+
+<!-- YOUTUBE BROADCAST MODE -->
+<div class="yt-overlay" id="ytOverlay">
+  <div class="yt-header">
+    <div class="yt-logo">✝ <span>One Body TV</span></div>
+    <button class="yt-close" onclick="stopYTMode()">✕ Exit Broadcast</button>
+  </div>
+  <div class="yt-body">
+    <div class="yt-cross">✝</div>
+    <div class="yt-book-ref" id="ytBookRef">GENESIS · CHAPTER 1</div>
+    <div class="yt-verse-num" id="ytVerseNum">Verse 1</div>
+    <div class="yt-verse-text" id="ytVerseText">"In the beginning God created the heaven and the earth."</div>
+  </div>
+  <div class="yt-ministry">One Body TV · Reaching the Unreached Ministry · onebodytv.com</div>
+  <div class="yt-controls">
+    <button class="yt-ctrl-btn" onclick="ytPrevVerse()">◀ Prev</button>
+    <button class="yt-ctrl-btn primary" id="ytPlayBtn" onclick="toggleYTPlay()">⏸ Pause</button>
+    <button class="yt-ctrl-btn" onclick="ytNextVerse()">Next ▶</button>
+  </div>
+  <div class="yt-progress"><div class="yt-progress-fill" id="ytProgressFill"></div></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#" onclick="return false">
+    <div class="logo-icon">✝</div>
+    <div class="logo-text">One Body <span>Bible</span></div>
+  </a>
+  <div class="header-right">
+    <input class="search-box" type="text" placeholder="Go to John 3:16…" id="searchBox" onkeydown="searchScripture(event)"/>
+    <div class="streak-badge" id="streakBadge">🔥 0</div>
+    <button class="icon-btn" onclick="togglePanel('audioPanel')" title="Listen">🔊</button>
+    <button class="icon-btn" onclick="togglePanel('bookmarkPanel')" title="Bookmarks">🔖</button>
+    <button class="icon-btn" onclick="togglePanel('plansPanel')" title="Plans">📖</button>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Theme">🌙</button>
+    <button class="donate-btn" onclick="openModal('donateModal')">💛 Give</button>
+  </div>
+</header>
+
+<!-- AUDIO BAR -->
+<div class="audio-bar" id="audioBar">
+  <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()">⏸</button>
+  <div class="audio-info">
+    <div class="audio-title" id="audioTitle">Reading…</div>
+    <div class="audio-sub" id="audioSub">One Body Bible · KJV</div>
+  </div>
+  <div class="audio-progress" id="audioProgress">
+    <div class="audio-progress-fill" id="audioProgressFill"></div>
+  </div>
+  <div class="audio-verse-indicator" id="audioVerseIndicator">v1</div>
+  <button class="audio-close" onclick="stopAudio()">✕</button>
+</div>
+
+<!-- MAIN BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar"></div>
+
+  <!-- CHAPTER NAV -->
+  <div class="chapter-nav" id="chapterNav"></div>
+
+  <!-- READER WRAP -->
+  <div class="reader-wrap" id="readerWrap">
+    <div class="reader" id="reader">
+      <div class="loading">✝ Opening the Word…</div>
+    </div>
+    <!-- BOTTOM BAR (desktop) -->
+    <div class="bottom-bar">
+      <span class="devo-icon">📖</span>
+      <div class="devo-text">
+        <div class="devo-label">Today's Devotional</div>
+        <div class="devo-quote" id="devoQuote">Walk by faith, not by sight — 2 Corinthians 5:7</div>
+      </div>
+      <button class="devo-btn" onclick="openModal('donateModal')">💛 Give</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANELS -->
+<!-- AUDIO PANEL -->
+<div class="panel" id="audioPanel">
+  <div class="panel-header">
+    <span class="panel-title">🔊 Audio Reading</span>
+    <button class="panel-close" onclick="closePanel('audioPanel')">✕</button>
+  </div>
+  <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.8rem">Choose a voice to hear the Word read aloud.</p>
+  <div class="voice-grid" id="voiceGrid">
+    <div class="voice-card active" id="voice_elder" onclick="selectVoice('elder')">
+      <div class="voice-icon">👴</div>
+      <div class="voice-name">Elder David</div>
+      <div class="voice-desc">Deep & Authoritative</div>
+    </div>
+    <div class="voice-card" id="voice_grace" onclick="selectVoice('grace')">
+      <div class="voice-icon">👩‍🦳</div>
+      <div class="voice-name">Sister Grace</div>
+      <div class="voice-desc">Warm & Gentle</div>
+    </div>
+    <div class="voice-card" id="voice_samuel" onclick="selectVoice('samuel')">
+      <div class="voice-icon">👦</div>
+      <div class="voice-name">Angel Samuel</div>
+      <div class="voice-desc">Clear & Young</div>
+    </div>
+    <div class="voice-card" id="voice_esther" onclick="selectVoice('esther')">
+      <div class="voice-icon">👧</div>
+      <div class="voice-name">Angel Esther</div>
+      <div class="voice-desc">Sweet & Tender</div>
+    </div>
+  </div>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem">Reading Speed</div>
+  <div class="speed-row">
+    <div class="speed-btn" id="spd08" onclick="setSpeed(0.8)">0.8x</div>
+    <div class="speed-btn active" id="spd10" onclick="setSpeed(1.0)">1.0x</div>
+    <div class="speed-btn" id="spd12" onclick="setSpeed(1.2)">1.2x</div>
+    <div class="speed-btn" id="spd15" onclick="setSpeed(1.5)">1.5x</div>
+  </div>
+  <button class="play-chapter-btn" onclick="startAudio()">▶ Read This Chapter Aloud</button>
+  <button class="youtube-mode-btn" onclick="startYTMode()">📺 YouTube Broadcast Mode</button>
+  <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.5rem;line-height:1.5">Broadcast Mode displays verses full-screen one by one — perfect for recording as a YouTube video for One Body TV.</p>
+</div>
+
+<!-- BOOKMARK PANEL -->
+<div class="panel" id="bookmarkPanel">
+  <div class="panel-header">
+    <span class="panel-title">🔖 Saved Verses</span>
+    <button class="panel-close" onclick="closePanel('bookmarkPanel')">✕</button>
+  </div>
+  <div id="bookmarkBody"></div>
+</div>
+
+<!-- PLANS PANEL -->
+<div class="panel" id="plansPanel">
+  <div class="panel-header">
+    <span class="panel-title">📖 Reading Plans</span>
+    <button class="panel-close" onclick="closePanel('plansPanel')">✕</button>
+  </div>
+  <div id="plansBody"></div>
+</div>
+
+<!-- NOTE PANEL -->
+<div class="panel" id="notePanel">
+  <div class="panel-header">
+    <span class="panel-title">✏️ My Note</span>
+    <button class="panel-close" onclick="closePanel('notePanel')">✕</button>
+  </div>
+  <div class="note-label">Selected Verse</div>
+  <div class="note-ref" id="noteRef"></div>
+  <div class="note-label">Your Reflection / Prayer</div>
+  <textarea class="note-input" id="noteInput" placeholder="Write your thoughts, prayer, or reflection…"></textarea>
+  <button class="note-save-btn" onclick="saveNote()">Save Note</button>
+</div>
+
+<!-- WALLPAPER PANEL -->
+<div class="panel" id="wallpaperPanel">
+  <div class="panel-header">
+    <span class="panel-title">🖼 Verse Card</span>
+    <button class="panel-close" onclick="closePanel('wallpaperPanel')">✕</button>
+  </div>
+  <div class="wp-preview" id="wpPreview"></div>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem">Background</div>
+  <div class="wp-bg-row">
+    <div class="wp-bg-btn active" id="wpDark" style="background:linear-gradient(135deg,#1a1200,#0d0b09)" onclick="setWpBg('dark')"></div>
+    <div class="wp-bg-btn" id="wpGold" style="background:linear-gradient(135deg,#8B6914,#C9A84C)" onclick="setWpBg('gold')"></div>
+    <div class="wp-bg-btn" id="wpParchment" style="background:linear-gradient(135deg,#F5F0E0,#EDE0C0)" onclick="setWpBg('parchment')"></div>
+    <div class="wp-bg-btn" id="wpNight" style="background:linear-gradient(135deg,#050a1a,#0a1530)" onclick="setWpBg('night')"></div>
+  </div>
+  <button class="wp-dl-btn" onclick="downloadCard()">⬇ Save Card</button>
+  <button class="wp-dl-btn" onclick="shareCard()">↗ Share Card</button>
+</div>
+
+<!-- VERSE TOOLBAR -->
+<div class="verse-toolbar" id="verseToolbar">
+  <div class="hl-dot" style="background:#C9A84C" onclick="highlightVerse('gold')" title="Gold"></div>
+  <div class="hl-dot" style="background:#6496FF" onclick="highlightVerse('blue')" title="Blue"></div>
+  <div class="hl-dot" style="background:#64C864" onclick="highlightVerse('green')" title="Green"></div>
+  <div class="vt-sep"></div>
+  <button class="vt-btn" onclick="bookmarkVerse()">🔖 Save</button>
+  <button class="vt-btn" onclick="openNote()">✏️ Note</button>
+  <button class="vt-btn" onclick="copyVerse()">📋 Copy</button>
+  <button class="vt-btn" onclick="shareVerse()">↗ Share</button>
+  <button class="vt-btn" onclick="makeWallpaper()">🖼 Card</button>
+  <div class="vt-sep"></div>
+  <button class="vt-btn" onclick="closeToolbar()">✕</button>
+</div>
+
+<!-- MOBILE TAB BAR -->
+<div class="mobile-tab-bar">
+  <button class="tab-btn active" onclick="mobileTab('books',this)"><span class="tab-icon">📚</span>Books</button>
+  <button class="tab-btn" onclick="mobileTab('bookmark',this)"><span class="tab-icon">🔖</span>Saved</button>
+  <button class="tab-btn" onclick="mobileTab('plans',this)"><span class="tab-icon">🗓️</span>Plans</button>
+  <button class="tab-btn" onclick="mobileTab('audio',this)"><span class="tab-icon">🔊</span>Listen</button>
+  <button class="tab-btn" onclick="openModal('donateModal')"><span class="tab-icon">💛</span>Give</button>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobile()"></div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// BIBLE DATA
+// ═══════════════════════════════════════════
+const OT=['Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Solomon','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi'];
+const NT=['Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'];
+const BOOKS=[...OT,...NT];
+const CHAPTER_COUNTS={Genesis:50,Exodus:40,Leviticus:27,Numbers:36,Deuteronomy:34,Joshua:24,Judges:21,Ruth:4,'1 Samuel':31,'2 Samuel':24,'1 Kings':22,'2 Kings':25,'1 Chronicles':29,'2 Chronicles':36,Ezra:10,Nehemiah:13,Esther:10,Job:42,Psalms:150,Proverbs:31,Ecclesiastes:12,'Song of Solomon':8,Isaiah:66,Jeremiah:52,Lamentations:5,Ezekiel:48,Daniel:12,Hosea:14,Joel:3,Amos:9,Obadiah:1,Jonah:4,Micah:7,Nahum:3,Habakkuk:3,Zephaniah:3,Haggai:2,Zechariah:14,Malachi:4,Matthew:28,Mark:16,Luke:24,John:21,Acts:28,Romans:16,'1 Corinthians':16,'2 Corinthians':13,Galatians:6,Ephesians:6,Philippians:4,Colossians:4,'1 Thessalonians':5,'2 Thessalonians':3,'1 Timothy':6,'2 Timothy':4,Titus:3,Philemon:1,Hebrews:13,James:5,'1 Peter':5,'2 Peter':3,'1 John':5,'2 John':1,'3 John':1,Jude:1,Revelation:22};
+
+const VOTD_VERSES=[
+  {verse:'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',ref:'John 3:16'},
+  {verse:'The LORD is my shepherd; I shall not want.',ref:'Psalms 23:1'},
+  {verse:'I can do all things through Christ which strengtheneth me.',ref:'Philippians 4:13'},
+  {verse:'Trust in the LORD with all thine heart; and lean not unto thine own understanding.',ref:'Proverbs 3:5'},
+  {verse:'Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go.',ref:'Joshua 1:9'},
+  {verse:'And we know that all things work together for good to them that love God, to them who are the called according to his purpose.',ref:'Romans 8:28'},
+  {verse:'In the beginning God created the heaven and the earth.',ref:'Genesis 1:1'},
+];
+
+const READING_PLANS=[
+  {id:'chronological',name:'Chronological Bible',desc:'Read the entire Bible in chronological order in one year.',days:365},
+  {id:'new_testament',name:'New Testament in 90 Days',desc:'Complete the New Testament in just 3 months.',days:90},
+  {id:'psalms_proverbs',name:'Psalms & Proverbs',desc:'Read all Psalms and Proverbs in 31 days.',days:31},
+  {id:'gospels',name:'The Four Gospels',desc:'Journey through Matthew, Mark, Luke & John in 30 days.',days:30},
+  {id:'wisdom',name:'Wisdom Books',desc:'Job, Proverbs, Ecclesiastes & Song of Solomon in 21 days.',days:21},
+];
+
+const BASE='https://raw.githubusercontent.com/aruljohn/Bible-kjv/master/';
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentBook='John', currentChapter=3, currentVerseData=[];
+let bibleCache={};
+let highlights=JSON.parse(localStorage.getItem('ob_hl')||'{}');
+let bookmarks=JSON.parse(localStorage.getItem('ob_bm')||'[]');
+let notes=JSON.parse(localStorage.getItem('ob_notes')||'{}');
+let readHistory=JSON.parse(localStorage.getItem('ob_read')||'{}');
+let activePlan=localStorage.getItem('ob_plan')||null;
+let planProgress=JSON.parse(localStorage.getItem('ob_plan_prog')||'{}');
+let streak=parseInt(localStorage.getItem('ob_streak')||'0');
+let selectedVerse=null, selectedVerseText='';
+let isSpeaking=false, speechRate=1.0, currentUtterance=null;
+let speechCurrentVerse=0;
+let wpBg='dark';
+let selectedVoice='elder';
+let selectedDonateAmount=25;
+
+// YouTube mode
+let ytPlaying=false, ytVerseIndex=0, ytInterval=null, ytVoiceUtterance=null;
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+function init(){
+  updateStreak();
+  showVOTD();
+  buildSidebar('sidebar');
+  loadChapter(currentBook, currentChapter);
+  loadBookmarkPanel();
+  loadPlansPanel();
+  if(localStorage.getItem('ob_theme')==='light'){document.body.classList.add('light');document.getElementById('themeBtn').textContent='🌑';}
+}
+
+// ═══════════════════════════════════════════
+// STREAK
+// ═══════════════════════════════════════════
+function updateStreak(){
+  const today=new Date().toDateString();
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  const lastRead=localStorage.getItem('ob_last_read')||'';
+  if(lastRead===today){}
+  else if(lastRead===yesterday) streak++;
+  else if(lastRead==='') streak=1;
+  else streak=1;
+  localStorage.setItem('ob_streak',streak);
+  localStorage.setItem('ob_last_read',today);
+  document.getElementById('streakBadge').textContent='🔥 '+streak;
+  document.getElementById('streakCount').textContent=streak;
+}
+
+// ═══════════════════════════════════════════
+// VOTD
+// ═══════════════════════════════════════════
+function showVOTD(){
+  const today=new Date().toDateString();
+  if(localStorage.getItem('ob_votd_shown')===today){closeVOTD();return;}
+  const v=VOTD_VERSES[new Date().getDate()%VOTD_VERSES.length];
+  document.getElementById('votdVerse').textContent='"'+v.verse+'"';
+  document.getElementById('votdRef').textContent=v.ref+' KJV';
+}
+function closeVOTD(){
+  localStorage.setItem('ob_votd_shown',new Date().toDateString());
+  document.getElementById('votdOverlay').style.display='none';
+}
+
+// ═══════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════
+function buildSidebar(id){
+  const el=document.getElementById(id);if(!el)return;
+  let h='';
+  h+='<div class="testament-header">Old Testament</div>';
+  OT.forEach(b=>{h+=`<div class="book-item${b===currentBook?' active':''}${readHistory[b]?' read':''}" onclick="selectBook('${b.replace(/'/g,"\\'")}')"><span>${b}</span><div class="book-read-dot"></div></div>`;});
+  h+='<div class="testament-header">New Testament</div>';
+  NT.forEach(b=>{h+=`<div class="book-item${b===currentBook?' active':''}${readHistory[b]?' read':''}" onclick="selectBook('${b.replace(/'/g,"\\'")}')"><span>${b}</span><div class="book-read-dot"></div></div>`;});
+  el.innerHTML=h;
+}
+function buildChapterNav(book){
+  const count=CHAPTER_COUNTS[book]||50;
+  let h='';
+  for(let i=1;i<=count;i++){
+    const isRead=readHistory[book] && readHistory[book].includes(i);
+    h+=`<div class="chapter-btn${i===currentChapter?' active':''}${isRead?' read':''}" onclick="loadChapter('${book.replace(/'/g,"\\'")}',${i})" id="cb${i}">${i}</div>`;
+  }
+  document.getElementById('chapterNav').innerHTML=h;
+}
+function selectBook(book){
+  currentBook=book;
+  currentChapter=1;
+  buildSidebar('sidebar');
+  buildChapterNav(book);
+  loadChapter(book,1);
+  closeMobile();
+}
+
+// ═══════════════════════════════════════════
+// LOAD CHAPTER
+// ═══════════════════════════════════════════
+async function loadChapter(book,chapter){
+  currentBook=book;currentChapter=chapter;
+  document.getElementById('reader').innerHTML='<div class="loading">✝ Loading '+book+' '+chapter+'…</div>';
+  buildChapterNav(book);
+  buildSidebar('sidebar');
+  stopAudio();
+  try{
+    const ck=book+'_'+chapter;
+    let data;
+    if(bibleCache[ck]){data=bibleCache[ck];}
+    else{
+      const fn=book.replace(/ /g,'')+'.json';
+      const r=await fetch(BASE+fn);
+      const bookData=await r.json();
+      // cache all chapters
+      if(bookData.chapters){bookData.chapters.forEach((ch,i)=>{bibleCache[book+'_'+(i+1)]=ch.verses?ch.verses.map(v=>v.text):ch;});}
+      data=bibleCache[ck];
+    }
+    if(!data||!data.length)throw new Error('No data');
+    currentVerseData=data;
+    renderChapter(book,chapter,data);
+    markRead(book,chapter);
+  }catch(e){
+    document.getElementById('reader').innerHTML='<div class="loading" style="color:var(--red)">Could not load '+book+' '+chapter+'. Check your connection.</div>';
+  }
+}
+function renderChapter(book,chapter,verses){
+  const hlKey=book+'_'+chapter;
+  let h='';
+  // Plan banner
+  if(activePlan){
+    const p=READING_PLANS.find(x=>x.id===activePlan);
+    const prog=planProgress[activePlan]||0;
+    const pct=Math.round((prog/p.days)*100);
+    h+=`<div class="plan-banner"><div><div style="font-size:0.8rem;color:var(--gold);font-weight:700">${p.name}</div><div class="plan-text">Day <strong>${prog}</strong> of ${p.days}</div></div><div class="plan-progress-bar"><div class="plan-progress-fill" style="width:${pct}%"></div></div></div>`;
+  }
+  h+=`<div class="book-chapter-title">${book}</div>`;
+  h+=`<div class="book-chapter-sub"><span>Chapter ${chapter}</span><span class="progress-pill">KJV</span><span class="progress-pill">One Body Bible</span></div>`;
+  verses.forEach((v,i)=>{
+    const num=i+1;
+    const key=hlKey+'_'+num;
+    const hlClass=highlights[key]?'highlighted-'+highlights[key]:'';
+    const bmClass=bookmarks.find(b=>b.book===book&&b.chapter===chapter&&b.verse===num)?'bookmarked':'';
+    const note=notes[key]?`<div class="verse-note">📝 ${notes[key]}</div>`:'';
+    h+=`<div class="verse-wrap ${hlClass} ${bmClass}" id="v${num}" onclick="selectVerseEl(${num},'${v.replace(/'/g,"\\'")}')">
+      <span class="verse-num">${num}</span>
+      <div><span class="verse-text">${v}</span>${note}</div>
+    </div>`;
+  });
+  // Love offering banner every 5 chapters
+  h+=`<div class="love-offering-banner">
+    <div class="lo-text">
+      <div class="lo-title">📖 Help Us Print Bibles for Africa</div>
+      <div class="lo-desc">This platform is free. Every love offering helps us put a physical Bible in the hands of someone who has never owned one.</div>
+    </div>
+    <button class="lo-btn" onclick="openModal('donateModal')">Give a Love Offering 💛</button>
+  </div>`;
+  // Chapter navigation
+  const total=CHAPTER_COUNTS[book]||50;
+  h+=`<div class="chapter-nav-arrows">`;
+  if(chapter>1) h+=`<button class="nav-arrow" onclick="loadChapter('${book}',${chapter-1})">◀ ${book} ${chapter-1}</button>`;
+  else h+=`<div></div>`;
+  if(chapter<total) h+=`<button class="nav-arrow" onclick="loadChapter('${book}',${chapter+1})">${book} ${chapter+1} ▶</button>`;
+  else h+=`<div></div>`;
+  h+=`</div>`;
+  document.getElementById('reader').innerHTML=h;
+  document.getElementById('readerWrap').scrollTop=0;
+  document.getElementById('audioTitle').textContent=book+' '+chapter;
+}
+function markRead(book,chapter){
+  if(!readHistory[book]) readHistory[book]=[];
+  if(!readHistory[book].includes(chapter)) readHistory[book].push(chapter);
+  localStorage.setItem('ob_read',JSON.stringify(readHistory));
+  if(activePlan){
+    planProgress[activePlan]=(planProgress[activePlan]||0)+1;
+    localStorage.setItem('ob_plan_prog',JSON.stringify(planProgress));
+  }
+}
+
+// ═══════════════════════════════════════════
+// VERSE SELECTION
+// ═══════════════════════════════════════════
+function selectVerseEl(num,text){
+  selectedVerse={num,book:currentBook,chapter:currentChapter};
+  selectedVerseText=text;
+  document.querySelectorAll('.verse-wrap').forEach(e=>e.style.outline='');
+  const el=document.getElementById('v'+num);
+  if(el)el.style.outline='1px solid var(--gold)';
+  document.getElementById('verseToolbar').classList.add('open');
+}
+function closeToolbar(){
+  document.getElementById('verseToolbar').classList.remove('open');
+  document.querySelectorAll('.verse-wrap').forEach(e=>e.style.outline='');
+  selectedVerse=null;
+}
+function highlightVerse(color){
+  if(!selectedVerse)return;
+  const key=`${selectedVerse.book}_${selectedVerse.chapter}_${selectedVerse.num}`;
+  highlights[key]=color;
+  localStorage.setItem('ob_hl',JSON.stringify(highlights));
+  renderChapter(currentBook,currentChapter,currentVerseData);
+  closeToolbar();showToast('Verse highlighted!');
+}
+function bookmarkVerse(){
+  if(!selectedVerse)return;
+  const exists=bookmarks.findIndex(b=>b.book===selectedVerse.book&&b.chapter===selectedVerse.chapter&&b.verse===selectedVerse.num);
+  if(exists>-1){bookmarks.splice(exists,1);showToast('Bookmark removed');}
+  else{bookmarks.push({book:selectedVerse.book,chapter:selectedVerse.chapter,verse:selectedVerse.num,text:selectedVerseText.substring(0,80),date:new Date().toLocaleDateString()});showToast('Verse bookmarked! 🔖');}
+  localStorage.setItem('ob_bm',JSON.stringify(bookmarks));
+  renderChapter(currentBook,currentChapter,currentVerseData);
+  closeToolbar();
+}
+function copyVerse(){
+  if(!selectedVerse)return;
+  const text=`"${selectedVerseText}" — ${selectedVerse.book} ${selectedVerse.chapter}:${selectedVerse.num} KJV · One Body Bible`;
+  navigator.clipboard.writeText(text).catch(()=>{});
+  closeToolbar();showToast('Verse copied!');
+}
+function shareVerse(){
+  if(!selectedVerse)return;
+  const text=`"${selectedVerseText}" — ${selectedVerse.book} ${selectedVerse.chapter}:${selectedVerse.num} KJV\n\nRead more at https://onebodybible.com`;
+  if(navigator.share)navigator.share({text,title:'One Body Bible'});
+  else navigator.clipboard.writeText(text).catch(()=>{});
+  closeToolbar();
+}
+
+// ═══════════════════════════════════════════
+// AUDIO — Browser TTS (with verse highlight)
+// ═══════════════════════════════════════════
+const VOICE_SETTINGS={
+  elder:{pitch:0.7,rate:0.85,voiceHint:'male'},
+  grace:{pitch:1.1,rate:0.9,voiceHint:'female'},
+  samuel:{pitch:1.3,rate:1.0,voiceHint:'male'},
+  esther:{pitch:1.4,rate:0.95,voiceHint:'female'},
+};
+function selectVoice(v){
+  selectedVoice=v;
+  document.querySelectorAll('.voice-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('voice_'+v).classList.add('active');
+}
+function setSpeed(s){
+  speechRate=s;
+  ['08','10','12','15'].forEach(x=>{const e=document.getElementById('spd'+x);if(e)e.classList.remove('active');});
+  const key='spd'+String(s).replace('.','');
+  const el=document.getElementById(key);if(el)el.classList.add('active');
+}
+function startAudio(){
+  if(!window.speechSynthesis)return showToast('Audio not available on this browser');
+  stopAudio();
+  if(!currentVerseData.length)return showToast('No chapter loaded');
+  speechCurrentVerse=0;
+  readNextVerse();
+  document.getElementById('audioBar').classList.add('visible');
+  document.getElementById('audioPlayBtn').textContent='⏸';
+  closePanel('audioPanel');
+  showToast('Reading aloud…');
+}
+function readNextVerse(){
+  if(speechCurrentVerse>=currentVerseData.length){stopAudio();showToast('Chapter complete ✝');return;}
+  const vNum=speechCurrentVerse+1;
+  const text='Verse '+vNum+'. '+currentVerseData[speechCurrentVerse];
+  currentUtterance=new SpeechSynthesisUtterance(text);
+  const vs=VOICE_SETTINGS[selectedVoice];
+  currentUtterance.pitch=vs.pitch;
+  currentUtterance.rate=speechRate;
+  currentUtterance.volume=1;
+  // pick best available voice
+  const voices=window.speechSynthesis.getVoices();
+  const hint=vs.voiceHint;
+  const match=voices.find(v=>v.lang.startsWith('en')&&(hint==='female'?/female|woman|zira|hazel|karen|victoria|samantha/i.test(v.name):/male|man|david|james|daniel/i.test(v.name)));
+  if(match)currentUtterance.voice=match;
+  currentUtterance.onend=()=>{
+    document.querySelectorAll('.verse-wrap.speaking').forEach(e=>e.classList.remove('speaking'));
+    speechCurrentVerse++;
+    const pct=Math.round((speechCurrentVerse/currentVerseData.length)*100);
+    document.getElementById('audioProgressFill').style.width=pct+'%';
+    readNextVerse();
+  };
+  window.speechSynthesis.speak(currentUtterance);
+  isSpeaking=true;
+  // highlight current verse
+  document.querySelectorAll('.verse-wrap.speaking').forEach(e=>e.classList.remove('speaking'));
+  const vEl=document.getElementById('v'+vNum);
+  if(vEl){vEl.classList.add('speaking');vEl.scrollIntoView({behavior:'smooth',block:'center'});}
+  document.getElementById('audioVerseIndicator').textContent='v'+vNum;
+  document.getElementById('audioSub').textContent=currentBook+' '+currentChapter+' · KJV · One Body Bible';
+}
+function toggleAudio(){
+  if(!window.speechSynthesis)return;
+  if(window.speechSynthesis.paused){window.speechSynthesis.resume();isSpeaking=true;document.getElementById('audioPlayBtn').textContent='⏸';}
+  else if(isSpeaking){window.speechSynthesis.pause();document.getElementById('audioPlayBtn').textContent='▶';}
+  else{startAudio();}
+}
+function stopAudio(){
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  isSpeaking=false;
+  speechCurrentVerse=0;
+  document.getElementById('audioBar').classList.remove('visible');
+  document.getElementById('audioPlayBtn').textContent='▶';
+  document.getElementById('audioProgressFill').style.width='0%';
+  document.querySelectorAll('.verse-wrap.speaking').forEach(e=>e.classList.remove('speaking'));
+}
+
+// ═══════════════════════════════════════════
+// YOUTUBE BROADCAST MODE
+// ═══════════════════════════════════════════
+function startYTMode(){
+  if(!currentVerseData.length)return showToast('Load a chapter first');
+  closePanel('audioPanel');
+  ytVerseIndex=0;
+  ytPlaying=true;
+  document.getElementById('ytOverlay').classList.add('active');
+  document.getElementById('ytBookRef').textContent=currentBook.toUpperCase()+' · CHAPTER '+currentChapter;
+  document.body.style.overflow='hidden';
+  showYTVerse(0);
+  startYTAuto();
+}
+function showYTVerse(idx){
+  if(idx>=currentVerseData.length){stopYTMode();return;}
+  const total=currentVerseData.length;
+  const verse=currentVerseData[idx];
+  const vNum=idx+1;
+  const ytText=document.getElementById('ytVerseText');
+  const ytNum=document.getElementById('ytVerseNum');
+  const ytProg=document.getElementById('ytProgressFill');
+  ytText.classList.add('fade');
+  setTimeout(()=>{
+    ytNum.textContent='Verse '+vNum+' of '+total;
+    ytText.textContent='"'+verse+'"';
+    ytText.classList.remove('fade');
+    ytProg.style.width=Math.round((vNum/total)*100)+'%';
+    // speak verse
+    if(window.speechSynthesis){
+      window.speechSynthesis.cancel();
+      const utt=new SpeechSynthesisUtterance('Verse '+vNum+'. '+verse);
+      const vs=VOICE_SETTINGS[selectedVoice];
+      utt.pitch=vs.pitch;utt.rate=speechRate;utt.volume=1;
+      window.speechSynthesis.speak(utt);
+    }
+  },400);
+}
+function startYTAuto(){
+  clearInterval(ytInterval);
+  // estimate reading time: ~15 seconds per verse average
+  ytInterval=setInterval(()=>{
+    if(!ytPlaying)return;
+    ytVerseIndex++;
+    if(ytVerseIndex>=currentVerseData.length){stopYTMode();return;}
+    showYTVerse(ytVerseIndex);
+  },14000);
+}
+function toggleYTPlay(){
+  ytPlaying=!ytPlaying;
+  document.getElementById('ytPlayBtn').textContent=ytPlaying?'⏸ Pause':'▶ Play';
+  if(ytPlaying){startYTAuto();showYTVerse(ytVerseIndex);}
+  else{clearInterval(ytInterval);window.speechSynthesis&&window.speechSynthesis.cancel();}
+}
+function ytNextVerse(){
+  ytVerseIndex++;
+  showYTVerse(ytVerseIndex);
+  if(ytPlaying)startYTAuto();
+}
+function ytPrevVerse(){
+  ytVerseIndex=Math.max(0,ytVerseIndex-1);
+  showYTVerse(ytVerseIndex);
+  if(ytPlaying)startYTAuto();
+}
+function stopYTMode(){
+  clearInterval(ytInterval);
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  ytPlaying=false;
+  document.getElementById('ytOverlay').classList.remove('active');
+  document.body.style.overflow='';
+  document.getElementById('ytPlayBtn').textContent='⏸ Pause';
+}
+
+// ═══════════════════════════════════════════
+// DONATION
+// ═══════════════════════════════════════════
+function setAmount(n){
+  selectedDonateAmount=n;
+  document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('donateAmount').value=n||'';
+}
+function submitDonation(){
+  const amt=document.getElementById('donateAmount').value;
+  const name=document.getElementById('donateName').value;
+  const email=document.getElementById('donateEmail').value;
+  if(!amt||isNaN(amt)||amt<1)return showToast('Please enter a valid amount');
+  // Redirect to PayPal or Stripe — configurable
+  const paypalLink=`https://www.paypal.com/donate?business=prexy%40prexcall.com&amount=${amt}&currency_code=USD&item_name=One+Body+Bible+Love+Offering`;
+  window.open(paypalLink,'_blank');
+  closeModal('donateModal');
+  showToast('Thank you '+( name||'for your gift')+'! God bless you 💛');
+}
+
+// ═══════════════════════════════════════════
+// PANELS
+// ═══════════════════════════════════════════
+function togglePanel(id){
+  const p=document.getElementById(id);if(!p)return;
+  const isOpen=p.classList.contains('open');
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('open'));
+  if(!isOpen){p.classList.add('open');if(id==='bookmarkPanel')loadBookmarkPanel();if(id==='plansPanel')loadPlansPanel();}
+}
+function closePanel(id){const p=document.getElementById(id);if(p)p.classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ═══════════════════════════════════════════
+// BOOKMARKS
+// ═══════════════════════════════════════════
+function loadBookmarkPanel(){
+  const el=document.getElementById('bookmarkBody');if(!el)return;
+  if(!bookmarks.length){el.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:2rem">No bookmarks yet.<br>Tap a verse and press 🔖 to save.</p>';return;}
+  let h='';
+  [...bookmarks].reverse().forEach(bm=>{
+    h+=`<div class="bm-item" onclick="loadChapter('${bm.book}',${bm.chapter});closePanel('bookmarkPanel')">
+      <div class="bm-ref">${bm.book} ${bm.chapter}:${bm.verse} · ${bm.date}</div>
+      <div class="bm-text">"${bm.text}…"</div>
+    </div>`;
+  });
+  el.innerHTML=h;
+}
+
+// ═══════════════════════════════════════════
+// READING PLANS
+// ═══════════════════════════════════════════
+function loadPlansPanel(){
+  const el=document.getElementById('plansBody');if(!el)return;
+  let h='<p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Choose a structured reading plan to stay consistent in the Word.</p>';
+  READING_PLANS.forEach(p=>{
+    const prog=planProgress[p.id]||0;const pct=Math.round((prog/p.days)*100);const isActive=activePlan===p.id;
+    h+=`<div class="rp-card${isActive?' active':''}" onclick="activatePlan('${p.id}')">
+      <div class="rp-name">${p.name}${isActive?' ✓':''}</div>
+      <div class="rp-desc">${p.desc}</div>
+      <div class="rp-bar"><div class="rp-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem">Day ${prog} of ${p.days} · ${pct}%</div>
+    </div>`;
+  });
+  el.innerHTML=h;
+}
+function activatePlan(id){
+  activePlan=activePlan===id?null:id;
+  localStorage.setItem('ob_plan',activePlan||'');
+  if(activePlan&&!planProgress[activePlan])planProgress[activePlan]=0;
+  loadPlansPanel();
+  renderChapter(currentBook,currentChapter,currentVerseData);
+  showToast(activePlan?'Reading plan activated!':'Plan deactivated');
+}
+
+// ═══════════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════════
+function openNote(){
+  if(!selectedVerse)return;
+  const key=`${selectedVerse.book}_${selectedVerse.chapter}_${selectedVerse.num}`;
+  document.getElementById('noteRef').textContent='"'+selectedVerseText.substring(0,120)+'…" — '+selectedVerse.book+' '+selectedVerse.chapter+':'+selectedVerse.num;
+  const inp=document.getElementById('noteInput');
+  inp.value=notes[key]||'';
+  inp.dataset.key=key;
+  inp.dataset.book=selectedVerse.book;
+  inp.dataset.chapter=selectedVerse.chapter;
+  closeToolbar();
+  togglePanel('notePanel');
+}
+function saveNote(){
+  const inp=document.getElementById('noteInput');
+  const key=inp.dataset.key;
+  if(inp.value.trim())notes[key]=inp.value.trim();
+  else delete notes[key];
+  localStorage.setItem('ob_notes',JSON.stringify(notes));
+  closePanel('notePanel');
+  renderChapter(currentBook,currentChapter,currentVerseData);
+  showToast('Note saved ✓');
+}
+
+// ═══════════════════════════════════════════
+// WALLPAPER
+// ═══════════════════════════════════════════
+const WP_STYLES={
+  dark:{bg:'linear-gradient(145deg,#1a1200,#0d0b09)',text:'#F0EBE0',accent:'#C9A84C'},
+  gold:{bg:'linear-gradient(135deg,#8B6914,#C9A84C)',text:'#0D0B09',accent:'#0D0B09'},
+  parchment:{bg:'linear-gradient(145deg,#F5F0E0,#EDE0C0)',text:'#2a1a0a',accent:'#8B6914'},
+  night:{bg:'linear-gradient(145deg,#050a1a,#0a1530)',text:'#E0E8FF',accent:'#6496FF'}
+};
+function makeWallpaper(){
+  if(!selectedVerse)return;
+  updateWpPreview();closeToolbar();togglePanel('wallpaperPanel');
+}
+function setWpBg(bg){
+  wpBg=bg;
+  Object.keys(WP_STYLES).forEach(b=>{const e=document.getElementById('wp'+b.charAt(0).toUpperCase()+b.slice(1));if(e)e.classList.toggle('active',b===bg);});
+  updateWpPreview();
+}
+function updateWpPreview(){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const s=WP_STYLES[wpBg];
+  const el=document.getElementById('wpPreview');
+  el.style.background=s.bg;el.style.color=s.text;
+  el.innerHTML=`<div style="width:100%"><div style="font-size:2rem;margin-bottom:0.6rem">✝</div><div style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.95rem;line-height:1.7;margin-bottom:0.8rem">"${selectedVerseText.substring(0,140)}…"</div><div style="font-size:0.75rem;font-weight:700;letter-spacing:0.05em;color:${s.accent}">${book} ${chapter}:${num} KJV</div><div style="font-size:0.58rem;margin-top:0.4rem;opacity:0.5">One Body Bible · onebodybible.com</div></div>`;
+}
+function downloadCard(){showToast('Hold down on the card to save the image!');}
+function shareCard(){
+  const text=selectedVerse?`"${selectedVerseText}" — ${selectedVerse.book} ${selectedVerse.chapter}:${selectedVerse.num} KJV\n\nOne Body Bible · onebodybible.com`:'';
+  if(navigator.share)navigator.share({text,title:'One Body Bible'});
+  else navigator.clipboard.writeText(text).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
+function searchScripture(e){
+  if(e.key!=='Enter')return;
+  const q=e.target.value.trim();if(!q)return;
+  const ref=q.match(/^(\d?\s?[a-zA-Z ]+)\s+(\d+):?(\d+)?$/);
+  if(ref){
+    const bSearch=ref[1].trim();const chap=parseInt(ref[2]);const verse=ref[3]?parseInt(ref[3]):null;
+    const found=BOOKS.find(b=>b.toLowerCase().startsWith(bSearch.toLowerCase()));
+    if(found){
+      loadChapter(found,chap).then(()=>{
+        if(verse)setTimeout(()=>{const el=document.getElementById('v'+verse);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--gold)';}},600);
+      });
+      e.target.value='';
+      showToast('Going to '+found+' '+chap+(verse?':'+verse:''));
+    } else showToast('Book not found. Try "John 3" or "Psalms 23"');
+  } else showToast('Try "John 3:16" or "Psalms 23"');
+}
+
+// ═══════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const btn=document.getElementById('themeBtn');
+  btn.textContent=document.body.classList.contains('light')?'🌑':'🌙';
+  localStorage.setItem('ob_theme',document.body.classList.contains('light')?'light':'dark');
+}
+
+// ═══════════════════════════════════════════
+// MOBILE
+// ═══════════════════════════════════════════
+function mobileTab(tab,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));
+  if(tab==='books'){toggleMobile();}
+  else if(tab==='bookmark'){togglePanel('bookmarkPanel');}
+  else if(tab==='plans'){togglePanel('plansPanel');}
+  else if(tab==='audio'){togglePanel('audioPanel');}
+}
+function toggleMobile(){
+  document.getElementById('mobileOverlay').classList.toggle('open');
+  document.getElementById('chapterNav').classList.toggle('mobile-open');
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+function closeMobile(){
+  document.getElementById('mobileOverlay').classList.remove('open');
+  document.getElementById('chapterNav').classList.remove('mobile-open');
+  document.getElementById('sidebar').classList.remove('mobile-open');
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';},2200);
+}
+
+// START
+init();
+</script>
+</body>
+</html>
