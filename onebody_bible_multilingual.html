@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="One Body Bible"/>
+<meta name="theme-color" content="#000000"/>
+<meta name="author" content="Prexy Sam Ola — Swelerion Global Inc."/>
+<title>One Body Bible — Every Language, One Word</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --black:#000000;
+  --white:#FFFFFF;
+  --gold:#FFD700;
+  --gold2:#FFA500;
+  --gray:#CCCCCC;
+  --gray2:#888888;
+  --card:#111111;
+  --card2:#1a1a1a;
+  --border:#222222;
+}
+body{font-family:'Inter',sans-serif;background:var(--black);color:var(--white);min-height:100vh;overflow-x:hidden}
+
+/* LANGUAGE SELECT SCREEN */
+#lang-screen{
+  position:fixed;inset:0;background:#000;z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;
+}
+.lang-logo{font-size:48px;margin-bottom:16px}
+.lang-title{font-size:28px;font-weight:700;color:var(--white);text-align:center;margin-bottom:8px;font-family:'Playfair Display',serif}
+.lang-subtitle{font-size:14px;color:var(--gray2);text-align:center;margin-bottom:40px;line-height:1.6}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:400px;max-height:60vh;overflow-y:auto;padding-right:4px}
+.lang-grid::-webkit-scrollbar{width:4px}
+.lang-grid::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+.lang-btn{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:16px 12px;cursor:pointer;text-align:center;transition:all 0.2s;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.lang-btn:hover,.lang-btn:active{border-color:var(--gold);background:var(--card2)}
+.lang-flag{font-size:28px}
+.lang-name{font-size:13px;font-weight:600;color:var(--white)}
+.lang-native{font-size:11px;color:var(--gold)}
+
+/* HEADER */
+header{
+  background:var(--black);border-bottom:1px solid var(--border);
+  padding:0 20px;display:flex;align-items:center;justify-content:space-between;
+  height:56px;position:sticky;top:0;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700;letter-spacing:0.03em}
+.logo-text span{color:var(--gold)}
+.header-actions{display:flex;align-items:center;gap:12px}
+.lang-switch{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--gold);cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:600}
+
+/* MAIN LAYOUT */
+.app-container{display:flex;flex-direction:column;min-height:calc(100vh - 56px)}
+
+/* HERO BANNER */
+.hero{
+  background:linear-gradient(180deg,#0a0a0a 0%,#000 100%);
+  padding:32px 20px 24px;border-bottom:1px solid var(--border);
+  text-align:center;
+}
+.hero-eyebrow{font-size:11px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:12px;font-weight:600}
+.hero-verse{font-family:'Playfair Display',serif;font-size:20px;line-height:1.7;color:var(--white);font-style:italic;margin-bottom:8px;max-width:500px;margin-left:auto;margin-right:auto}
+.hero-ref{font-size:13px;color:var(--gold);font-weight:600;margin-bottom:20px}
+.hero-streak{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:6px 16px;font-size:12px;color:var(--gold);font-weight:600}
+
+/* NAV TABS */
+.nav-tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:14px 20px;font-size:13px;font-weight:600;color:var(--gray2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* CONTENT AREA */
+.content-area{flex:1;padding:20px;max-width:700px;width:100%;margin:0 auto}
+
+/* TESTAMENT SELECTOR */
+.testament-row{display:flex;gap:12px;margin-bottom:20px}
+.testament-btn{flex:1;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--gray2);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.2s}
+.testament-btn.active{background:var(--gold);color:#000;border-color:var(--gold)}
+
+/* BOOK GRID */
+.section-label{font-size:11px;letter-spacing:0.15em;color:var(--gray2);text-transform:uppercase;font-weight:600;margin-bottom:12px;margin-top:24px}
+.book-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.book-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:12px 8px;text-align:center;cursor:pointer;transition:all 0.2s;
+}
+.book-card:hover,.book-card:active{border-color:var(--gold);background:var(--card2)}
+.book-card.completed{border-color:rgba(255,215,0,0.4)}
+.book-name{font-size:12px;font-weight:600;color:var(--white);line-height:1.3}
+.book-chapters{font-size:10px;color:var(--gray2);margin-top:4px}
+.book-progress{height:2px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.book-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.3s}
+
+/* READER */
+#reader-view{display:none;padding:0}
+.reader-header{position:sticky;top:56px;background:var(--black);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;z-index:50}
+.reader-title{font-size:16px;font-weight:700;color:var(--white)}
+.reader-subtitle{font-size:12px;color:var(--gold)}
+.reader-nav{display:flex;gap:8px}
+.reader-nav-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--white);font-size:12px;cursor:pointer;font-weight:600}
+.reader-nav-btn:hover{border-color:var(--gold);color:var(--gold)}
+.reader-content{padding:24px 20px;max-width:700px;margin:0 auto}
+.chapter-label{font-size:11px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;font-weight:600;margin-bottom:20px;text-align:center}
+.verse{display:flex;gap:12px;margin-bottom:14px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.verse:hover,.verse.highlighted{background:rgba(255,215,0,0.07)}
+.verse-num{font-size:11px;color:var(--gold);font-weight:700;min-width:20px;padding-top:3px;flex-shrink:0}
+.verse-text{font-family:'Playfair Display',serif;font-size:17px;line-height:1.85;color:var(--white)}
+
+/* CHAPTER GRID */
+.chapter-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:20px}
+.chapter-btn{
+  aspect-ratio:1;background:var(--card);border:1px solid var(--border);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;
+  color:var(--white);cursor:pointer;transition:all 0.2s;
+}
+.chapter-btn:hover,.chapter-btn:active{background:var(--gold);color:#000;border-color:var(--gold)}
+.chapter-btn.read{border-color:rgba(255,215,0,0.4);color:var(--gold)}
+
+/* LOVE OFFERING CARD */
+.offering-card{
+  background:linear-gradient(135deg,#1a1200,#2a1800);
+  border:1px solid var(--gold);border-radius:20px;padding:28px 24px;
+  text-align:center;margin:20px 0;
+}
+.offering-title{font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px;font-family:'Playfair Display',serif}
+.offering-subtitle{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:24px}
+.offering-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.offering-amt{
+  padding:12px 8px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);
+  border-radius:12px;font-size:14px;font-weight:700;color:var(--gold);cursor:pointer;transition:all 0.2s;text-align:center;
+}
+.offering-amt:hover,.offering-amt.selected{background:var(--gold);color:#000;border-color:var(--gold)}
+.offering-btn{
+  width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#000;border:none;border-radius:14px;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.03em;
+}
+.offering-note{font-size:11px;color:var(--gray2);margin-top:12px;line-height:1.5}
+
+/* PREMIUM CARD */
+.premium-card{
+  background:linear-gradient(135deg,#0a0a1a,#1a1a2a);
+  border:1px solid #4444aa;border-radius:20px;padding:24px;margin:20px 0;
+}
+.premium-title{font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px}
+.premium-price{font-size:28px;font-weight:700;color:var(--gold);margin-bottom:16px}
+.premium-price span{font-size:14px;color:var(--gray2);font-weight:400}
+.premium-features{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.premium-feature{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gray)}
+.premium-feature::before{content:'✓';color:var(--gold);font-weight:700;font-size:14px}
+.premium-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4444cc,#6666ff);color:var(--white);border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+
+/* SEARCH */
+.search-wrap{padding:20px 0;position:relative}
+.search-input{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 20px;color:var(--white);font-size:15px;outline:none;font-family:'Inter',sans-serif;
+}
+.search-input:focus{border-color:var(--gold)}
+.search-input::placeholder{color:var(--gray2)}
+.search-results{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.search-result{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s}
+.search-result:hover{border-color:var(--gold)}
+.search-result-ref{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:6px}
+.search-result-text{font-family:'Playfair Display',serif;font-size:14px;color:var(--gray);line-height:1.6}
+.search-result-text em{color:var(--white);font-style:normal;font-weight:700}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--black);
+  border-top:1px solid var(--border);display:flex;padding:8px 0;padding-bottom:env(safe-area-inset-bottom,8px);
+  z-index:100;
+}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;transition:all 0.2s}
+.bottom-nav-icon{font-size:22px;line-height:1}
+.bottom-nav-label{font-size:10px;color:var(--gray2);font-weight:600;letter-spacing:0.05em}
+.bottom-nav-item.active .bottom-nav-label{color:var(--gold)}
+.bottom-nav-item.active .bottom-nav-icon{filter:drop-shadow(0 0 6px var(--gold))}
+
+/* PADDING FOR BOTTOM NAV */
+.page-padding{padding-bottom:80px}
+
+/* DAILY PLAN */
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;cursor:pointer;transition:all 0.2s}
+.plan-card:hover{border-color:var(--gold)}
+.plan-title{font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px}
+.plan-duration{font-size:12px;color:var(--gold);margin-bottom:8px}
+.plan-desc{font-size:13px;color:var(--gray);line-height:1.5}
+.plan-progress-bar{height:4px;background:var(--border);border-radius:4px;margin-top:12px;overflow:hidden}
+.plan-progress-fill{height:100%;background:var(--gold);border-radius:4px}
+
+/* LANGUAGE BADGE */
+.lang-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--gold);font-weight:600;margin-bottom:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity 0.3s;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LANGUAGE SELECT SCREEN -->
+<div id="lang-screen">
+  <div class="lang-logo">✝</div>
+  <div class="lang-title">One Body Bible</div>
+  <div class="lang-subtitle">The Word of God in your language.<br>Every tongue. Every nation. One Body.</div>
+  <div class="lang-grid" id="lang-grid">
+    <!-- Languages injected by JS -->
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" style="display:none">
+
+<!-- HEADER -->
+<header>
+  <div class="logo" onclick="goHome()">
+    <div class="logo-icon">✝</div>
+    <div class="logo-text">ONE BODY <span>BIBLE</span></div>
+  </div>
+  <div class="header-actions">
+    <div class="lang-switch" onclick="showLangScreen()">
+      <span id="current-flag">🌍</span>
+      <span id="current-lang-code">EN</span>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="app-container">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page-padding">
+    <div class="hero">
+      <div class="lang-badge" id="reading-in-badge">📖 Reading in English</div>
+      <div class="hero-eyebrow">✨ Verse of the Day</div>
+      <div class="hero-verse" id="votd-text">"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."</div>
+      <div class="hero-ref" id="votd-ref">John 3:16</div>
+      <div class="hero-streak">🔥 <span id="streak-count">1</span> Day Streak — Keep Reading!</div>
+    </div>
+
+    <div class="content-area">
+      <!-- TESTAMENT BUTTONS -->
+      <div class="testament-row">
+        <div class="testament-btn active" id="ot-btn" onclick="showTestament('OT')">📜 Old Testament</div>
+        <div class="testament-btn" id="nt-btn" onclick="showTestament('NT')">✝ New Testament</div>
+      </div>
+
+      <div class="section-label" id="testament-label">Old Testament — 39 Books</div>
+      <div class="book-grid" id="book-grid"></div>
+    </div>
+  </div>
+
+  <!-- CHAPTER SELECT PAGE -->
+  <div id="page-chapters" style="display:none" class="page-padding">
+    <div class="reader-header">
+      <div>
+        <div class="reader-title" id="chapter-book-title">Genesis</div>
+        <div class="reader-subtitle" id="chapter-book-sub">Select a chapter</div>
+      </div>
+      <div class="reader-nav">
+        <div class="reader-nav-btn" onclick="showPage('home')">← Books</div>
+      </div>
+    </div>
+    <div class="chapter-grid" id="chapter-grid"></div>
+  </div>
+
+  <!-- READER PAGE -->
+  <div id="page-reader" style="display:none" class="page-padding">
+    <div class="reader-header">
+      <div>
+        <div class="reader-title" id="reader-book-title">Genesis 1</div>
+        <div class="reader-subtitle" id="reader-lang-label">King James Version</div>
+      </div>
+      <div class="reader-nav">
+        <div class="reader-nav-btn" id="prev-chapter-btn" onclick="prevChapter()">‹ Prev</div>
+        <div class="reader-nav-btn" id="next-chapter-btn" onclick="nextChapter()">Next ›</div>
+      </div>
+    </div>
+    <div class="reader-content" id="reader-content"></div>
+  </div>
+
+  <!-- SEARCH PAGE -->
+  <div id="page-search" style="display:none" class="page-padding">
+    <div class="content-area">
+      <div class="search-wrap">
+        <input class="search-input" id="search-input" placeholder="Search the scriptures..." oninput="doSearch(this.value)" autocomplete="off"/>
+      </div>
+      <div class="search-results" id="search-results">
+        <div style="text-align:center;color:var(--gray2);padding:40px 0;font-size:14px">Type a word or phrase to search the Bible</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GIVING PAGE -->
+  <div id="page-giving" style="display:none" class="page-padding">
+    <div class="content-area">
+      <div style="text-align:center;padding:24px 0 16px">
+        <div style="font-size:40px;margin-bottom:12px">🙏</div>
+        <div style="font-size:22px;font-weight:700;color:var(--white);font-family:'Playfair Display',serif;margin-bottom:8px">Give a Love Offering</div>
+        <div style="font-size:13px;color:var(--gray);line-height:1.6">Your giving keeps the Word free for every believer around the world. You are partnering with Reaching the Unreached Ministry.</div>
+      </div>
+
+      <div class="offering-card">
+        <div class="offering-title">Support the Ministry</div>
+        <div class="offering-subtitle">"Give, and it shall be given unto you; good measure, pressed down, and shaken together, and running over." — Luke 6:38</div>
+        <div class="offering-amounts">
+          <div class="offering-amt" onclick="selectAmt(this,'5')">$5</div>
+          <div class="offering-amt" onclick="selectAmt(this,'10')">$10</div>
+          <div class="offering-amt" onclick="selectAmt(this,'25')">$25</div>
+          <div class="offering-amt" onclick="selectAmt(this,'50')">$50</div>
+        </div>
+        <button class="offering-btn" onclick="giveOffering()">💛 Give Love Offering</button>
+        <div class="offering-note">Processed securely by Apple Pay. Your gift supports Reaching the Unreached Ministry founded by Prexy Sam Ola. Tax-deductible where applicable.</div>
+      </div>
+
+      <div class="premium-card">
+        <div class="premium-title">✨ One Body Bible Premium</div>
+        <div class="premium-price">$4.99 <span>/ month</span></div>
+        <div class="premium-features">
+          <div class="premium-feature">Personal notebook & highlights</div>
+          <div class="premium-feature">Personalized reading plans</div>
+          <div class="premium-feature">Audio Bible narration</div>
+          <div class="premium-feature">All 10+ Bible translations</div>
+          <div class="premium-feature">Offline reading — no data needed</div>
+        </div>
+        <button class="premium-btn" onclick="showToast('Premium coming soon! 🙏')">Upgrade to Premium</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANS PAGE -->
+  <div id="page-plans" style="display:none" class="page-padding">
+    <div class="content-area">
+      <div style="padding:20px 0 8px">
+        <div style="font-size:20px;font-weight:700;color:var(--white);margin-bottom:4px">Reading Plans</div>
+        <div style="font-size:13px;color:var(--gray2)">Guided journeys through Scripture</div>
+      </div>
+      <div id="plans-list"></div>
+    </div>
+  </div>
+
+</div><!-- end app-container -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-item active" id="nav-home" onclick="showPage('home');setNav('home')">
+    <div class="bottom-nav-icon">📖</div>
+    <div class="bottom-nav-label">READ</div>
+  </div>
+  <div class="bottom-nav-item" id="nav-search" onclick="showPage('search');setNav('search')">
+    <div class="bottom-nav-icon">🔍</div>
+    <div class="bottom-nav-label">SEARCH</div>
+  </div>
+  <div class="bottom-nav-item" id="nav-plans" onclick="showPage('plans');setNav('plans')">
+    <div class="bottom-nav-icon">🗓</div>
+    <div class="bottom-nav-label">PLANS</div>
+  </div>
+  <div class="bottom-nav-item" id="nav-giving" onclick="showPage('giving');setNav('giving')">
+    <div class="bottom-nav-icon">💛</div>
+    <div class="bottom-nav-label">GIVE</div>
+  </div>
+</nav>
+
+</div><!-- end main-app -->
+
+<script>
+// ============================================================
+// LANGUAGES
+// ============================================================
+const LANGUAGES = [
+  {code:'en', name:'English', native:'King James Version', flag:'🇬🇧'},
+  {code:'yo', name:'Yoruba', native:'Bibeli Mimọ', flag:'🇳🇬'},
+  {code:'fr', name:'French', native:'Louis Segond', flag:'🇫🇷'},
+  {code:'es', name:'Spanish', native:'Reina Valera', flag:'🇪🇸'},
+  {code:'pt', name:'Portuguese', native:'João Ferreira', flag:'🇧🇷'},
+  {code:'ha', name:'Hausa', native:'Littafi Mai Tsarki', flag:'🇳🇬'},
+  {code:'ig', name:'Igbo', native:'Akwụkwọ Nsọ', flag:'🇳🇬'},
+  {code:'sw', name:'Swahili', native:'Biblia Takatifu', flag:'🇰🇪'},
+  {code:'ar', name:'Arabic', native:'الكتاب المقدس', flag:'🇸🇦'},
+  {code:'zh', name:'Chinese', native:'圣经 普通话', flag:'🇨🇳'},
+  {code:'de', name:'German', native:'Lutherbibel', flag:'🇩🇪'},
+  {code:'ru', name:'Russian', native:'Синодальный', flag:'🇷🇺'},
+  {code:'hi', name:'Hindi', native:'पवित्र बाइबिल', flag:'🇮🇳'},
+  {code:'ko', name:'Korean', native:'개역개정', flag:'🇰🇷'},
+  {code:'it', name:'Italian', native:'La Bibbia CEI', flag:'🇮🇹'},
+  {code:'pl', name:'Polish', native:'Biblia Tysiąclecia', flag:'🇵🇱'},
+];
+
+let currentLang = localStorage.getItem('obb_lang') || null;
+let currentFlag = localStorage.getItem('obb_flag') || '🌍';
+let currentLangName = localStorage.getItem('obb_langname') || 'English';
+let selectedAmt = '10';
+let currentBook = null;
+let currentChapter = 1;
+let currentTestament = 'OT';
+let streak = parseInt(localStorage.getItem('obb_streak')||'1');
+
+// ============================================================
+// BIBLE BOOKS
+// ============================================================
+const OT_BOOKS = [
+  {name:'Genesis',chapters:50},{name:'Exodus',chapters:40},{name:'Leviticus',chapters:27},
+  {name:'Numbers',chapters:36},{name:'Deuteronomy',chapters:34},{name:'Joshua',chapters:24},
+  {name:'Judges',chapters:21},{name:'Ruth',chapters:4},{name:'1 Samuel',chapters:31},
+  {name:'2 Samuel',chapters:24},{name:'1 Kings',chapters:22},{name:'2 Kings',chapters:25},
+  {name:'1 Chronicles',chapters:29},{name:'2 Chronicles',chapters:36},{name:'Ezra',chapters:10},
+  {name:'Nehemiah',chapters:13},{name:'Esther',chapters:10},{name:'Job',chapters:42},
+  {name:'Psalms',chapters:150},{name:'Proverbs',chapters:31},{name:'Ecclesiastes',chapters:12},
+  {name:'Song of Solomon',chapters:8},{name:'Isaiah',chapters:66},{name:'Jeremiah',chapters:52},
+  {name:'Lamentations',chapters:5},{name:'Ezekiel',chapters:48},{name:'Daniel',chapters:12},
+  {name:'Hosea',chapters:14},{name:'Joel',chapters:3},{name:'Amos',chapters:9},
+  {name:'Obadiah',chapters:1},{name:'Jonah',chapters:4},{name:'Micah',chapters:7},
+  {name:'Nahum',chapters:3},{name:'Habakkuk',chapters:3},{name:'Zephaniah',chapters:3},
+  {name:'Haggai',chapters:2},{name:'Zechariah',chapters:14},{name:'Malachi',chapters:4}
+];
+const NT_BOOKS = [
+  {name:'Matthew',chapters:28},{name:'Mark',chapters:16},{name:'Luke',chapters:24},
+  {name:'John',chapters:21},{name:'Acts',chapters:28},{name:'Romans',chapters:16},
+  {name:'1 Corinthians',chapters:16},{name:'2 Corinthians',chapters:13},{name:'Galatians',chapters:6},
+  {name:'Ephesians',chapters:6},{name:'Philippians',chapters:4},{name:'Colossians',chapters:4},
+  {name:'1 Thessalonians',chapters:5},{name:'2 Thessalonians',chapters:3},{name:'1 Timothy',chapters:6},
+  {name:'2 Timothy',chapters:4},{name:'Titus',chapters:3},{name:'Philemon',chapters:1},
+  {name:'Hebrews',chapters:13},{name:'James',chapters:5},{name:'1 Peter',chapters:5},
+  {name:'2 Peter',chapters:3},{name:'1 John',chapters:5},{name:'2 John',chapters:1},
+  {name:'3 John',chapters:1},{name:'Jude',chapters:1},{name:'Revelation',chapters:22}
+];
+
+// ============================================================
+// SAMPLE VERSES (multilingual)
+// ============================================================
+const SAMPLE_VERSES = {
+  en: ["In the beginning God created the heaven and the earth.","And the earth was without form, and void; and darkness was upon the face of the deep.","And the Spirit of God moved upon the face of the waters.","And God said, Let there be light: and there was light.","And God saw the light, that it was good: and God divided the light from the darkness."],
+  yo: ["Ni ibẹrẹ Ọlọrun dá ọrun àti ilẹ.","Ilẹ si jẹ ahoro, ko si nkankan lori rẹ; òkunkun si wà lori oju ijinle omi.","Ẹmí Ọlọrun si nfẹ lori oju omi.","Ọlọrun si wipe, Ki imọlẹ ki o wà: imọlẹ si wà.","Ọlọrun si ri imọlẹ, pe o dara: Ọlọrun si ya imọlẹ kuro ninu òkunkun."],
+  fr: ["Au commencement, Dieu créa les cieux et la terre.","La terre était informe et vide: il y avait des ténèbres à la surface de l'abîme.","L'Esprit de Dieu se mouvait au-dessus des eaux.","Dieu dit: Que la lumière soit! Et la lumière fut.","Dieu vit que la lumière était bonne; et Dieu sépara la lumière d'avec les ténèbres."],
+  es: ["En el principio creó Dios los cielos y la tierra.","Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo.","Y el Espíritu de Dios se movía sobre la faz de las aguas.","Y dijo Dios: Sea la luz; y fue la luz.","Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas."],
+  pt: ["No princípio, criou Deus os céus e a terra.","E a terra era sem forma e vazia; e havia trevas sobre a face do abismo.","E o Espírito de Deus se movia sobre a face das águas.","E disse Deus: haja luz! E houve luz.","E viu Deus que era boa a luz; e fez Deus separação entre a luz e as trevas."],
+  ha: ["A farkon Allah ya halicci sama da ƙasa.","Ƙasa kuwa tana wofi ne da fanko; duhu kuwa yana kan fuskar zurfin ruwa.","Ruhun Allah yana shawagi a kan fuskar ruwan.","Allah ya ce, Hasken ya kasance: sai hasken ya kasance.","Allah ya ga cewa hasken yana da kyau: Allah ya raba tsakanin hasken da duhu."],
+  ig: ["N'ịmalite, Chineke kere igwe na ala.","Ala dị nwayọ nwayọ na-enweghị ihe; oji dị n'elu ihu mmiri.","Mmụọ Chineke na-agbaghari n'elu ihu mmiri.","Chineke wee sị, Ka ìhè dị: ìhè wee dị.","Chineke hụ ìhè ahụ na ọ dị mma: Chineke wee kewaa ìhè na oji."],
+  sw: ["Hapo mwanzo Mungu aliumba mbingu na nchi.","Nchi ilikuwa ukiwa na utupu; na giza lilikuwa juu ya uso wa vilindi.","Roho ya Mungu ilikuwa ikisogea juu ya uso wa maji.","Mungu akasema, Iwe nuru; nayo ikawa nuru.","Mungu akaona kwamba nuru ilikuwa nzuri; Mungu akatenganisha nuru na giza."],
+  ar: ["فِي الْبَدْءِ خَلَقَ اللهُ السَّمَاوَاتِ وَالأَرْضَ.","وَكَانَتِ الأَرْضُ خَرِبَةً وَخَالِيَةً، وَعَلَى وَجْهِ الْغَمْرِ ظُلْمَةٌ.","وَرُوحُ اللهِ يَرِفُّ عَلَى وَجْهِ الْمِيَاهِ.","وَقَالَ اللهُ: لِيَكُنْ نُورٌ. فَكَانَ نُورٌ.","وَرَأَى اللهُ النُّورَ أَنَّهُ حَسَنٌ. وَفَصَلَ اللهُ بَيْنَ النُّورِ وَالظُّلْمَةِ."],
+  zh: ["起初，神创造天地。","地是空虚混沌，渊面黑暗；神的灵运行在水面上。","神的灵运行在水面上。","神说，要有光，就有了光。","神看光是好的，就把光暗分开了。"],
+  de: ["Am Anfang schuf Gott Himmel und Erde.","Und die Erde war wüst und leer, und es war finster auf der Tiefe.","Und der Geist Gottes schwebte auf dem Wasser.","Und Gott sprach: Es werde Licht! Und es ward Licht.","Und Gott sah, daß das Licht gut war. Da schied Gott das Licht von der Finsternis."],
+  ru: ["В начале сотворил Бог небо и землю.","Земля же была безвидна и пуста, и тьма над бездною.","И Дух Божий носился над водою.","И сказал Бог: да будет свет. И стал свет.","И увидел Бог свет, что он хорош, и отделил Бог свет от тьмы."],
+  hi: ["आदि में परमेश्वर ने आकाश और पृथ्वी की सृष्टि की।","पृथ्वी बेडौल और सुनसान पड़ी थी; और गहरे जल के ऊपर अन्धियारा था।","परमेश्वर का आत्मा जल के ऊपर मण्डलाता था।","तब परमेश्वर ने कहा, उजियाला हो: तो उजियाला हो गया।","और परमेश्वर ने देखा कि उजियाला अच्छा है; तो परमेश्वर ने उजियाले को अन्धियारे से अलग किया।"],
+  ko: ["태초에 하나님이 천지를 창조하시니라.","땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고.","하나님의 신은 수면에 운행하시니라.","하나님이 가라사대 빛이 있으라 하시매 빛이 있었고.","그 빛이 하나님의 보시기에 좋았더라 하나님이 빛과 어두움을 나누사."],
+  it: ["In principio Dio creò i cieli e la terra.","La terra era informe e vuota e le tenebre erano sulla faccia dell'abisso.","Lo Spirito di Dio aleggiava sulla faccia delle acque.","Dio disse: «Sia la luce!» E la luce fu.","Dio vide che la luce era buona; e Dio separò la luce dalle tenebre."],
+  pl: ["Na początku Bóg stworzył niebo i ziemię.","A ziemia była pustkowiem i chaosem i ciemność była nad przepaścią.","A Duch Boży unosił się nad wodami.","I rzekł Bóg: Niech będzie światłość. I stała się światłość.","I widział Bóg, że światłość była dobra; i oddzielił Bóg światłość od ciemności."]
+};
+
+const VOTD = [
+  {text:"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.", ref:"John 3:16"},
+  {text:"I can do all things through Christ which strengtheneth me.", ref:"Philippians 4:13"},
+  {text:"The LORD is my shepherd; I shall not want.", ref:"Psalm 23:1"},
+  {text:"Trust in the LORD with all thine heart; and lean not unto thine own understanding.", ref:"Proverbs 3:5"},
+  {text:"Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go.", ref:"Joshua 1:9"},
+];
+
+const READING_PLANS = [
+  {title:"Bible in a Year",duration:"365 Days",desc:"Read through the entire Bible in one year. Old and New Testament daily.",progress:0},
+  {title:"New Testament in 90 Days",duration:"90 Days",desc:"Focus on the life of Jesus and the early church.",progress:0},
+  {title:"Psalms & Proverbs",duration:"31 Days",desc:"A month of wisdom and praise — one Psalm and one Proverb daily.",progress:12},
+  {title:"Gospel of John",duration:"21 Days",desc:"Deep dive into the Gospel of John — the love chapter.",progress:0},
+  {title:"Sermon on the Mount",duration:"7 Days",desc:"Matthew 5-7 — the teachings of Jesus in seven days.",progress:0},
+];
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function(){
+  // Build language grid
+  const grid = document.getElementById('lang-grid');
+  LANGUAGES.forEach(l => {
+    const btn = document.createElement('div');
+    btn.className = 'lang-btn';
+    btn.innerHTML = `<div class="lang-flag">${l.flag}</div><div class="lang-name">${l.name}</div><div class="lang-native">${l.native}</div>`;
+    btn.onclick = () => selectLanguage(l);
+    grid.appendChild(btn);
+  });
+
+  if(currentLang){
+    hideLangScreen();
+  }
+
+  document.getElementById('streak-count').textContent = streak;
+  loadVOTD();
+  showTestament('OT');
+  loadPlans();
+};
+
+function selectLanguage(l){
+  currentLang = l.code;
+  currentFlag = l.flag;
+  currentLangName = l.name;
+  localStorage.setItem('obb_lang', l.code);
+  localStorage.setItem('obb_flag', l.flag);
+  localStorage.setItem('obb_langname', l.name);
+  document.getElementById('current-flag').textContent = l.flag;
+  document.getElementById('current-lang-code').textContent = l.code.toUpperCase();
+  document.getElementById('reading-in-badge').textContent = '📖 Reading in ' + l.name;
+  document.getElementById('reader-lang-label').textContent = l.native;
+  hideLangScreen();
+  showToast(l.flag + ' Language set to ' + l.name);
+}
+
+function hideLangScreen(){
+  document.getElementById('lang-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('current-flag').textContent = currentFlag;
+  document.getElementById('current-lang-code').textContent = (currentLang||'en').toUpperCase();
+  document.getElementById('reading-in-badge').textContent = '📖 Reading in ' + currentLangName;
+}
+
+function showLangScreen(){
+  document.getElementById('lang-screen').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+}
+
+function loadVOTD(){
+  const day = new Date().getDay();
+  const v = VOTD[day % VOTD.length];
+  document.getElementById('votd-text').textContent = '"' + v.text + '"';
+  document.getElementById('votd-ref').textContent = v.ref;
+}
+
+function showTestament(t){
+  currentTestament = t;
+  const books = t === 'OT' ? OT_BOOKS : NT_BOOKS;
+  document.getElementById('ot-btn').className = 'testament-btn' + (t==='OT'?' active':'');
+  document.getElementById('nt-btn').className = 'testament-btn' + (t==='NT'?' active':'');
+  document.getElementById('testament-label').textContent = t==='OT' ? 'Old Testament — 39 Books' : 'New Testament — 27 Books';
+
+  const grid = document.getElementById('book-grid');
+  grid.innerHTML = '';
+  const read = JSON.parse(localStorage.getItem('obb_read')||'{}');
+  books.forEach(b => {
+    const card = document.createElement('div');
+    card.className = 'book-card' + (read[b.name]?' completed':'');
+    const pct = read[b.name] ? Math.round((read[b.name]/b.chapters)*100) : 0;
+    card.innerHTML = `<div class="book-name">${b.name}</div><div class="book-chapters">${b.chapters} ch</div><div class="book-progress"><div class="book-progress-fill" style="width:${pct}%"></div></div>`;
+    card.onclick = () => openBook(b);
+    grid.appendChild(card);
+  });
+}
+
+function openBook(book){
+  currentBook = book;
+  document.getElementById('chapter-book-title').textContent = book.name;
+  document.getElementById('chapter-book-sub').textContent = book.chapters + ' Chapters';
+  const grid = document.getElementById('chapter-grid');
+  grid.innerHTML = '';
+  const read = JSON.parse(localStorage.getItem('obb_read')||'{}');
+  for(let i=1;i<=book.chapters;i++){
+    const btn = document.createElement('div');
+    const chapRead = read[book.name] >= i;
+    btn.className = 'chapter-btn' + (chapRead?' read':'');
+    btn.textContent = i;
+    btn.onclick = () => openChapter(i);
+    grid.appendChild(btn);
+  }
+  showPage('chapters');
+}
+
+function openChapter(ch){
+  currentChapter = ch;
+  renderChapter();
+  showPage('reader');
+}
+
+function renderChapter(){
+  const lang = currentLang || 'en';
+  const verses = SAMPLE_VERSES[lang] || SAMPLE_VERSES['en'];
+  document.getElementById('reader-book-title').textContent = currentBook.name + ' ' + currentChapter;
+
+  // Mark as read
+  const read = JSON.parse(localStorage.getItem('obb_read')||'{}');
+  if(!read[currentBook.name] || read[currentBook.name] < currentChapter){
+    read[currentBook.name] = currentChapter;
+    localStorage.setItem('obb_read', JSON.stringify(read));
+  }
+
+  // Update streak
+  const today = new Date().toDateString();
+  if(localStorage.getItem('obb_last_read') !== today){
+    streak++;
+    localStorage.setItem('obb_streak', streak);
+    localStorage.setItem('obb_last_read', today);
+    document.getElementById('streak-count').textContent = streak;
+  }
+
+  let html = `<div class="chapter-label">${currentBook.name} — Chapter ${currentChapter}</div>`;
+  for(let i=0;i<verses.length;i++){
+    html += `<div class="verse" onclick="this.classList.toggle('highlighted')">
+      <div class="verse-num">${i+1}</div>
+      <div class="verse-text">${verses[i]}</div>
+    </div>`;
+  }
+
+  // Every chapter gets an offering nudge
+  if(currentChapter % 3 === 0){
+    html += `<div class="offering-card" style="margin-top:32px">
+      <div class="offering-title">Blessed by the Word?</div>
+      <div class="offering-subtitle">Give a love offering to keep the Bible free for every nation.</div>
+      <button class="offering-btn" onclick="showPage('giving');setNav('giving')">💛 Give a Love Offering</button>
+    </div>`;
+  }
+
+  document.getElementById('reader-content').innerHTML = html;
+  document.getElementById('prev-chapter-btn').style.opacity = currentChapter > 1 ? '1' : '0.3';
+  document.getElementById('next-chapter-btn').style.opacity = currentChapter < currentBook.chapters ? '1' : '0.3';
+}
+
+function prevChapter(){if(currentChapter>1){currentChapter--;renderChapter();window.scrollTo(0,0);}}
+function nextChapter(){if(currentChapter<currentBook.chapters){currentChapter++;renderChapter();window.scrollTo(0,0);}}
+
+function goHome(){showPage('home');setNav('home');}
+
+function showPage(p){
+  ['home','chapters','reader','search','giving','plans'].forEach(id=>{
+    const el = document.getElementById('page-'+id);
+    if(el) el.style.display = p===id ? 'block' : 'none';
+  });
+  window.scrollTo(0,0);
+}
+
+function setNav(n){
+  ['home','search','plans','giving'].forEach(id=>{
+    const el = document.getElementById('nav-'+id);
+    if(el) el.className = 'bottom-nav-item' + (id===n?' active':'');
+  });
+}
+
+function selectAmt(el, amt){
+  selectedAmt = amt;
+  document.querySelectorAll('.offering-amt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function giveOffering(){
+  showToast('🙏 Thank you! Redirecting to giving...');
+  setTimeout(()=>{ window.open('https://onebodychurch.church','_blank'); }, 1000);
+}
+
+function doSearch(q){
+  const results = document.getElementById('search-results');
+  if(!q || q.length < 2){
+    results.innerHTML = '<div style="text-align:center;color:var(--gray2);padding:40px 0;font-size:14px">Search by book name, chapter, or keyword</div>';
+    return;
+  }
+  const lang = currentLang || 'en';
+  const verses = SAMPLE_VERSES[lang] || SAMPLE_VERSES['en'];
+  const matches = [];
+  const qLower = q.toLowerCase().trim();
+
+  // Parse reference format: "Genesis 1:1", "John 3", "Gen 1", etc.
+  const allBooks = [...OT_BOOKS, ...NT_BOOKS];
+  let refMatch = null;
+  for(const b of allBooks){
+    const bLower = b.name.toLowerCase();
+    const bShort = bLower.substring(0,3);
+    if(qLower.startsWith(bLower) || qLower.startsWith(bShort)){
+      refMatch = b;
+      break;
+    }
+  }
+
+  if(refMatch){
+    // Extract chapter and verse from query
+    const after = qLower.replace(refMatch.name.toLowerCase(),'').replace(refMatch.name.toLowerCase().substring(0,3),'').trim();
+    const parts = after.match(/(\d+)(?::(\d+))?/);
+    const ch = parts ? parseInt(parts[1]) : 1;
+    const vn = parts && parts[2] ? parseInt(parts[2]) : null;
+    const validCh = Math.min(Math.max(ch,1), refMatch.chapters);
+    const verseList = verses;
+    const verseIdx = vn ? Math.min(vn,verseList.length) : 1;
+    const verseText = verseList[(verseIdx-1) % verseList.length];
+    const ref = `${refMatch.name} ${validCh}:${verseIdx || 1}`;
+    matches.push({
+      ref, text: verseText,
+      book: refMatch, chapter: validCh
+    });
+    // Show a few surrounding verses too
+    for(let i=1;i<Math.min(4,verseList.length);i++){
+      matches.push({
+        ref:`${refMatch.name} ${validCh}:${(verseIdx||1)+i}`,
+        text: verseList[i % verseList.length],
+        book: refMatch, chapter: validCh
+      });
+    }
+  } else {
+    // Keyword search
+    verses.forEach((v,i) => {
+      if(v.toLowerCase().includes(qLower)){
+        const highlighted = v.replace(new RegExp(qLower,'gi'), m=>`<em>${m}</em>`);
+        matches.push({ref:`Genesis 1:${i+1}`, text:highlighted, book:OT_BOOKS[0], chapter:1});
+      }
+    });
+    // Also search book names
+    allBooks.forEach(b => {
+      if(b.name.toLowerCase().includes(qLower)){
+        matches.push({ref:b.name, text:`Tap to open — ${b.chapters} chapters`, book:b, chapter:1, isBook:true});
+      }
+    });
+  }
+
+  if(matches.length === 0){
+    results.innerHTML = `<div style="text-align:center;color:var(--gray2);padding:40px 0;font-size:14px">No results for "${q}"<br><span style="font-size:12px">Try: "John 3:16" or "love" or "Genesis"</span></div>`;
+    return;
+  }
+
+  results.innerHTML = matches.map(m=>`
+    <div class="search-result" onclick="openBook(${JSON.stringify(m.book)});openChapter(${m.chapter})">
+      <div class="search-result-ref">${m.ref}</div>
+      <div class="search-result-text">${m.text}</div>
+    </div>`).join('');
+}
+
+function loadPlans(){
+  const list = document.getElementById('plans-list');
+  if(!list) return;
+  list.innerHTML = READING_PLANS.map(p=>`
+    <div class="plan-card" onclick="showToast('Starting: ${p.title}...')">
+      <div class="plan-title">${p.title}</div>
+      <div class="plan-duration">📅 ${p.duration}</div>
+      <div class="plan-desc">${p.desc}</div>
+      <div class="plan-progress-bar"><div class="plan-progress-fill" style="width:${p.progress}%"></div></div>
+    </div>
+  `).join('');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
