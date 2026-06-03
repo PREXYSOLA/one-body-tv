@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a0a00">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="One Body Bible">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <script src="https://js.stripe.com/v3/"></script>
+<meta name="author" content="Prexy Sam Ola — Swelerion Global Inc.">
+  <meta name="copyright" content="2026 Swelerion Global Inc.">
+  <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>One Body Bible — KJV | A Swelerion Global Inc. Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold-light:#F0D080;--dark:#0D0B09;--dark2:#1A1714;--dark3:#252018;
+  --text:#F0EBE0;--text-muted:#9A9080;--accent:#2A2218;--border:#2a2418;
+}
+body.light{--dark:#F5F0E8;--dark2:#EDE8DC;--dark3:#E4DDD0;--text:#1A1410;--text-muted:#6A6050;--accent:#DDD5C0;--border:#C8BFA8}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background 0.3s,color 0.3s}
+
+/* VOTD OVERLAY */
+.votd-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.95)}
+.votd-card{width:min(480px,92vw);background:linear-gradient(145deg,#1a1200,#2a1e00,#0d0b00);border:1px solid var(--gold);border-radius:20px;padding:2.5rem;text-align:center;position:relative;overflow:hidden}
+.votd-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.15),transparent 70%);pointer-events:none}
+.votd-cross{font-size:2.5rem;margin-bottom:1rem;display:block}
+.votd-label{font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;font-family:'Inter',sans-serif}
+.votd-verse{font-family:'Playfair Display',serif;font-size:1.25rem;line-height:1.8;color:var(--text);margin-bottom:1.2rem;font-style:italic}
+.votd-ref{color:var(--gold);font-size:0.85rem;font-weight:600;margin-bottom:2rem;font-family:'Inter',sans-serif}
+.votd-streak{background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:30px;padding:0.4rem 1rem;display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--gold);margin-bottom:1.5rem;font-family:'Inter',sans-serif}
+.votd-btn{background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D0B09;border:none;padding:0.9rem 2rem;border-radius:30px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;font-family:'Inter',sans-serif;letter-spacing:0.05em;transition:opacity 0.2s}
+.votd-btn:hover{opacity:0.9}
+.votd-skip{color:var(--text-muted);font-size:0.75rem;cursor:pointer;margin-top:1rem;display:block;font-family:'Inter',sans-serif}
+
+/* HEADER */
+header{background:var(--dark2);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:0.6rem;cursor:pointer}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#8B6914);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.logo-text{font-size:1rem;font-weight:700;letter-spacing:0.05em;font-family:'Inter',sans-serif}
+.logo-text span{color:var(--gold)}
+.header-right{display:flex;align-items:center;gap:0.6rem}
+.search-box{background:var(--dark3);border:1px solid var(--border);border-radius:20px;padding:0.4rem 1rem;color:var(--text);font-size:0.82rem;width:180px;outline:none;font-family:'Inter',sans-serif}
+.search-box::placeholder{color:var(--text-muted)}
+.search-box:focus{border-color:var(--gold)}
+.icon-btn{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:0.35rem 0.6rem;color:var(--text-muted);cursor:pointer;font-size:1rem;transition:all 0.2s}
+.icon-btn:hover{color:var(--gold);border-color:var(--gold)}
+.streak-badge{background:linear-gradient(135deg,#8B6914,var(--gold));color:#0D0B09;border-radius:20px;padding:0.25rem 0.7rem;font-size:0.72rem;font-weight:700;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:0.3rem}
+
+/* LAYOUT */
+.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 60px)}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--dark2);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;transition:background 0.3s}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#3a3020;border-radius:2px}
+.testament-header{padding:0.8rem 1rem 0.4rem;font-size:0.6rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;font-weight:700;border-top:1px solid var(--border)}
+.book-item{padding:0.5rem 1.2rem;cursor:pointer;font-size:0.85rem;color:var(--text-muted);transition:all 0.15s;display:flex;align-items:center;justify-content:space-between}
+.book-item:hover{background:var(--dark3);color:var(--text)}
+.book-item.active{background:var(--accent);color:var(--gold);border-left:3px solid var(--gold)}
+.book-read-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity 0.2s}
+.book-item.read .book-read-dot{opacity:1}
+
+/* CHAPTER NAV */
+.chapter-nav{width:72px;background:#111009;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:0.5rem}
+.chapter-nav::-webkit-scrollbar{width:3px}
+.chapter-btn{width:100%;padding:0.4rem;margin-bottom:0.25rem;background:var(--dark3);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:0.78rem;transition:all 0.2s;text-align:center}
+.chapter-btn:hover{background:var(--accent);color:var(--text)}
+.chapter-btn.active{background:var(--gold);color:var(--dark);font-weight:700;border-color:var(--gold)}
+.chapter-btn.read{border-color:rgba(201,168,76,0.4);color:rgba(201,168,76,0.7)}
+
+/* READER */
+.reader{flex:1;overflow-y:auto;padding:2rem 3rem;max-width:740px;margin:0 auto;width:100%}
+.reader::-webkit-scrollbar{width:5px}
+.reader::-webkit-scrollbar-thumb{background:#3a3020;border-radius:3px}
+.book-chapter-title{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);margin-bottom:0.2rem;font-weight:700}
+.book-chapter-sub{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem;padding-bottom:1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.progress-pill{background:var(--accent);border:1px solid var(--border);border-radius:20px;padding:0.15rem 0.6rem;font-size:0.68rem;color:var(--gold)}
+.verse-wrap{display:flex;gap:0.8rem;margin-bottom:0.8rem;padding:0.6rem;border-radius:8px;cursor:pointer;transition:all 0.2s;position:relative;border:1px solid transparent}
+.verse-wrap:hover{background:var(--accent)}
+.verse-wrap.highlighted-gold{background:#2a2010;border-color:rgba(201,168,76,0.3)}
+.verse-wrap.highlighted-blue{background:#0a1525;border-color:rgba(100,150,255,0.3)}
+.verse-wrap.highlighted-green{background:#0a1f0a;border-color:rgba(100,200,100,0.3)}
+.verse-wrap.bookmarked::after{content:'🔖';position:absolute;right:0.5rem;top:0.3rem;font-size:0.7rem}
+.verse-num{color:var(--gold);font-size:0.72rem;font-weight:700;min-width:22px;padding-top:0.25rem;flex-shrink:0}
+.verse-text{font-family:'Playfair Display',serif;font-size:1.05rem;line-height:1.9;color:var(--text)}
+.verse-note{font-size:0.78rem;color:var(--gold);font-style:italic;margin-top:0.3rem;padding:0.3rem 0.5rem;background:rgba(201,168,76,0.08);border-radius:4px;font-family:'Inter',sans-serif}
+.loading{color:var(--text-muted);font-size:0.9rem;padding:2rem;text-align:center}
+
+/* READING PLAN BANNER */
+.plan-banner{background:linear-gradient(135deg,#1a1200,#0d1a0d);border:1px solid rgba(201,168,76,0.3);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;font-family:'Inter',sans-serif}
+.plan-progress-bar{flex:1;height:4px;background:var(--dark3);border-radius:2px;overflow:hidden}
+.plan-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.5s}
+.plan-text{font-size:0.78rem;color:var(--text-muted)}
+.plan-text strong{color:var(--gold)}
+
+/* BOTTOM BAR */
+.bottom-bar{background:var(--dark2);border-top:1px solid var(--border);padding:0.7rem 1.5rem;display:flex;align-items:center;gap:1rem;font-family:'Inter',sans-serif}
+.devo-icon{font-size:1.2rem;flex-shrink:0}
+.devo-text{flex:1;min-width:0}
+.devo-label{font-size:0.62rem;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.1rem}
+.devo-quote{font-size:0.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic;font-family:'Playfair Display',serif}
+.devo-btn{background:var(--gold);color:var(--dark);padding:0.4rem 0.9rem;border-radius:20px;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;white-space:nowrap;flex-shrink:0}
+
+/* VERSE ACTION TOOLBAR */
+.v-toolbar{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--gold);border-radius:40px;padding:0.5rem 0.8rem;display:none;gap:0.3rem;align-items:center;z-index:300;font-family:'Inter',sans-serif;font-size:0.78rem;box-shadow:0 8px 30px rgba(0,0,0,0.6);white-space:nowrap}
+.v-toolbar.visible{display:flex}
+.vt-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.35rem 0.55rem;border-radius:20px;transition:all 0.2s;font-size:0.78rem;display:flex;align-items:center;gap:0.3rem}
+.vt-btn:hover{background:var(--accent);color:var(--text)}
+.vt-sep{width:1px;height:20px;background:var(--border)}
+.hl-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,0.2)}
+
+/* PANELS */
+.panel{position:fixed;right:0;top:60px;bottom:0;width:340px;background:var(--dark2);border-left:1px solid var(--border);z-index:200;transform:translateX(100%);transition:transform 0.3s;overflow-y:auto;display:flex;flex-direction:column}
+.panel.open{transform:translateX(0)}
+.panel-header{padding:1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--dark2);position:sticky;top:0;z-index:1}
+.panel-title{font-weight:700;font-size:0.95rem;color:var(--gold)}
+.panel-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem}
+.panel-body{padding:1rem;flex:1}
+
+/* BOOKMARK ITEM */
+.bm-item{padding:0.8rem;background:var(--dark3);border-radius:8px;margin-bottom:0.6rem;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s}
+.bm-item:hover{border-color:var(--gold)}
+.bm-ref{font-size:0.72rem;color:var(--gold);font-weight:600;margin-bottom:0.3rem}
+.bm-text{font-size:0.82rem;color:var(--text-muted);line-height:1.5;font-family:'Playfair Display',serif;font-style:italic}
+
+/* READING PLANS */
+.rp-card{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:0.8rem;cursor:pointer;transition:border-color 0.2s}
+.rp-card:hover,.rp-card.active{border-color:var(--gold)}
+.rp-card.active{background:var(--accent)}
+.rp-name{font-weight:700;font-size:0.9rem;margin-bottom:0.3rem;color:var(--text)}
+.rp-desc{font-size:0.75rem;color:var(--text-muted);margin-bottom:0.6rem}
+.rp-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.rp-fill{height:100%;background:var(--gold);border-radius:2px}
+
+/* WALLPAPER CANVAS */
+.wp-preview{width:100%;aspect-ratio:1;border-radius:10px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem;font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;line-height:1.7;position:relative;overflow:hidden}
+.wp-btn-row{display:flex;gap:0.5rem;margin-bottom:0.5rem}
+.wp-bg-btn{flex:1;padding:0.5rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;font-size:0.75rem;font-family:'Inter',sans-serif;transition:border-color 0.2s}
+.wp-bg-btn.active{border-color:var(--gold)}
+.wp-dl-btn{width:100%;background:var(--gold);color:var(--dark);border:none;padding:0.7rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* NOTE INPUT */
+.note-input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:0.7rem;color:var(--text);font-size:0.85rem;resize:vertical;min-height:80px;font-family:'Inter',sans-serif;outline:none}
+.note-input:focus{border-color:var(--gold)}
+.note-save-btn{background:var(--gold);color:var(--dark);border:none;padding:0.5rem 1.2rem;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem;margin-top:0.5rem;font-family:'Inter',sans-serif}
+
+/* AUDIO PLAYER */
+.audio-bar{position:fixed;top:60px;left:0;right:0;background:linear-gradient(135deg,#1a1200,#0d1a00);border-bottom:1px solid rgba(201,168,76,0.3);padding:0.5rem 1.5rem;display:none;align-items:center;gap:1rem;z-index:90;font-family:'Inter',sans-serif}
+.audio-bar.visible{display:flex}
+.audio-play-btn{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#0D0B09}
+.audio-info{flex:1;min-width:0}
+.audio-title{font-size:0.78rem;color:var(--gold);font-weight:600}
+.audio-sub{font-size:0.68rem;color:var(--text-muted)}
+.audio-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem}
+
+/* NAV TABS (bottom mobile) */
+.bottom-tabs{display:none;background:var(--dark2);border-top:1px solid var(--border);padding:0.4rem 0}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.2rem;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.6rem;font-family:'Inter',sans-serif;padding:0.3rem}
+.tab-btn.active{color:var(--gold)}
+.tab-icon{font-size:1.2rem}
+
+/* SPLASH */
+.splash{position:fixed;inset:0;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;gap:0.8rem}
+.splash-logo{width:90px;height:90px;background:linear-gradient(135deg,var(--gold),#8B6914);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.8rem;animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,0.4)}50%{box-shadow:0 0 30px 10px rgba(201,168,76,0.2)}}
+.splash-title{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold);font-weight:700}
+.splash-sub{font-size:0.8rem;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase}
+.splash-bar{width:180px;height:2px;background:#2a2418;border-radius:2px;overflow:hidden;margin-top:1.5rem}
+.splash-fill{height:100%;background:var(--gold);border-radius:2px;animation:load 2.2s ease forwards}
+@keyframes load{from{width:0}to{width:100%}}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar,.chapter-nav{display:none}
+  .reader{padding:1rem 1rem 5rem}
+  .search-box{width:120px}
+  .panel{width:100%;top:60px}
+  .bottom-tabs{display:flex}
+  .bottom-bar{display:none}
+  .mobile-menu-btn{display:flex!important}
+  .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:199}
+  .mobile-overlay.open{display:block}
+  .mobile-sidebar{position:fixed;left:0;top:0;bottom:0;width:290px;background:var(--dark2);z-index:201;overflow-y:auto;transform:translateX(-100%);transition:transform 0.3s}
+  .mobile-sidebar.open{transform:translateX(0)}
+  .mobile-close{padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+}
+@media(min-width:769px){
+  .mobile-menu-btn{display:none!important}
+  .mobile-overlay,.mobile-sidebar{display:none!important}
+  .bottom-tabs{display:none!important}
+}
+</style>
+</head>
+<body>
+<!-- ONE BODY CHURCH PROMO BANNER -->
+<div id="obcPromoBanner" style="background:linear-gradient(135deg,#0a0020,#1a0050,#0d0030);border-bottom:2px solid #7c3aed;padding:0;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2220%22 cy=%2220%22 r=%2240%22 fill=%22%237c3aed11%22/><circle cx=%2280%22 cy=%2280%22 r=%2250%22 fill=%22%234f46e511%22/></svg>');"></div>
+  <div style="position:relative;max-width:600px;margin:0 auto;padding:18px 16px;text-align:center;">
+    <div style="display:inline-block;background:#7c3aed22;border:1px solid #7c3aed66;border-radius:20px;padding:4px 12px;margin-bottom:10px;">
+      <span style="color:#a78bfa;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;">🔥 Coming Soon</span>
+    </div>
+    <h2 style="color:#fff;font-family:Georgia,serif;font-size:20px;margin:0 0 8px;line-height:1.3;">One Body Church <span style="color:#a78bfa;">is Coming</span></h2>
+    <p style="color:#c4b5fd;font-size:13px;line-height:1.6;margin:0 0 14px;">The first Christian TV & streaming platform built FOR the Kingdom. Broadcast your sermons, gospel music & ministry to the world — FREE.</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:14px;">
+      <span style="background:#7c3aed22;border:1px solid #7c3aed44;color:#ddd6fe;font-size:11px;padding:4px 10px;border-radius:12px;">📺 Live TV Broadcasting</span>
+      <span style="background:#7c3aed22;border:1px solid #7c3aed44;color:#ddd6fe;font-size:11px;padding:4px 10px;border-radius:12px;">🎙️ Sermon Library</span>
+      <span style="background:#7c3aed22;border:1px solid #7c3aed44;color:#ddd6fe;font-size:11px;padding:4px 10px;border-radius:12px;">🎵 Gospel Music</span>
+      <span style="background:#7c3aed22;border:1px solid #7c3aed44;color:#ddd6fe;font-size:11px;padding:4px 10px;border-radius:12px;">🌍 Every Nation</span>
+      <span style="background:#7c3aed22;border:1px solid #7c3aed44;color:#ddd6fe;font-size:11px;padding:4px 10px;border-radius:12px;">✝️ 100% Free</span>
+    </div>
+    <a href="https://onebodychurch.com" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;padding:10px 24px;border-radius:25px;font-size:13px;font-weight:bold;text-decoration:none;margin-right:8px;box-shadow:0 4px 15px rgba(124,58,237,0.4);">Visit One Body Church →</a>
+    <button onclick="document.getElementById('obcPromoBanner').style.display='none'" style="background:none;border:1px solid #7c3aed44;color:#a78bfa;padding:10px 16px;border-radius:25px;font-size:12px;cursor:pointer;">Maybe Later</button>
+  </div>
+</div>
+<!-- END ONE BODY CHURCH PROMO BANNER -->
+
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-logo">✝</div>
+  <div class="splash-title">One Body Bible</div>
+  <div class="splash-sub">King James Version</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
+
+<!-- VERSE OF THE DAY OVERLAY -->
+<div class="votd-overlay" id="votdOverlay" style="display:none">
+  <div class="votd-card">
+    <span class="votd-cross">✝</span>
+    <div class="votd-label">Verse of the Day · One Body Bible</div>
+    <div class="votd-verse" id="votdText"></div>
+    <div class="votd-ref" id="votdRef"></div>
+    <div class="votd-streak" id="votdStreak">🔥 <span id="streakCount">0</span> day streak</div>
+    <button class="votd-btn" onclick="closeVotd()">Open Bible →</button>
+    <span class="votd-skip" onclick="closeVotd()">Skip for now</span>
+  </div>
+</div>
+
+<!-- AUDIO BAR -->
+<div class="audio-bar" id="audioBar">
+  <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()">▶</button>
+  <div class="audio-info">
+    <div class="audio-title" id="audioTitle">Reading: John 3</div>
+    <div class="audio-sub">King James Version · One Body Bible</div>
+  </div>
+  <button class="audio-close" onclick="stopAudio()">✕</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo" onclick="showVotd()">
+    <div class="logo-icon">✝</div>
+    <div class="logo-text">One Body <span>Bible</span></div>
+  </div>
+  <div class="header-right">
+    <input class="search-box" type="text" id="searchInput" placeholder="John 3:16..." onkeyup="searchScripture(event)"/>
+    <div class="streak-badge" id="streakBadge">🔥 0</div>
+    <button class="icon-btn" onclick="togglePanel('audioPanel')" title="Listen">🔊</button>
+    <button class="icon-btn" onclick="togglePanel('bookmarkPanel')" title="Bookmarks">🔖</button>
+    <button class="icon-btn" onclick="togglePanel('plansPanel')" title="Reading Plans">📖</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Theme">🌙</button>
+    <button class="icon-btn mobile-menu-btn" onclick="toggleMobile()">☰</button>
+  </div>
+</header>
+
+<!-- MOBILE -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobile()"></div>
+<div class="mobile-sidebar" id="mobileSidebar">
+  <div class="mobile-close">
+    <span style="font-size:0.85rem;color:var(--gold);font-weight:700">One Body Bible</span>
+    <button onclick="toggleMobile()" style="background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer">✕</button>
+  </div>
+  <div id="mobileSidebarContent"></div>
+</div>
+
+<!-- APP BODY -->
+<div class="app-body" id="appBody">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="chapter-nav" id="chapterNav"></div>
+  <div class="reader" id="reader"><div class="loading">⏳ Loading scripture...</div></div>
+</div>
+
+<!-- BOTTOM BAR (desktop) -->
+<div class="bottom-bar">
+  <div class="devo-icon">🕊️</div>
+  <div class="devo-text">
+    <div class="devo-label">Today's Word · One Body Church</div>
+    <div class="devo-quote" id="devoQuote"></div>
+  </div>
+  <button class="devo-btn" onclick="window.open('https://onebodytv.com','_blank')">One Body Church →</button>
+</div>
+
+<!-- BOTTOM TABS (mobile) -->
+<div class="bottom-tabs" id="bottomTabs">
+  <button class="tab-btn active" onclick="mobileTab('read')"><span class="tab-icon">📖</span>Read</button>
+  <button class="tab-btn" onclick="mobileTab('bookmark')"><span class="tab-icon">🔖</span>Saved</button>
+  <button class="tab-btn" onclick="mobileTab('plans')"><span class="tab-icon">🗓️</span>Plans</button>
+  <button class="tab-btn" onclick="mobileTab('audio')"><span class="tab-icon">🔊</span>Listen</button>
+  <button class="tab-btn" onclick="mobileTab('books')"><span class="tab-icon">☰</span>Books</button>
+</div>
+
+<!-- VERSE ACTION TOOLBAR -->
+<div class="v-toolbar" id="vToolbar">
+  <span style="color:var(--text-muted);font-size:0.72rem;padding:0 0.3rem">Highlight:</span>
+  <div class="hl-dot" style="background:#C9A84C" onclick="highlightVerse('gold')" title="Gold"></div>
+  <div class="hl-dot" style="background:#6496FF" onclick="highlightVerse('blue')" title="Blue"></div>
+  <div class="hl-dot" style="background:#64C864" onclick="highlightVerse('green')" title="Green"></div>
+  <div class="vt-sep"></div>
+  <button class="vt-btn" onclick="bookmarkVerse()">🔖 Save</button>
+  <button class="vt-btn" onclick="addNote()">✏️ Note</button>
+  <button class="vt-btn" onclick="copyVerse()">📋 Copy</button>
+  <button class="vt-btn" onclick="makeWallpaper()">🖼️ Card</button>
+  <button class="vt-btn" onclick="shareVerse()">↗ Share</button>
+  <div class="vt-sep"></div>
+  <button class="vt-btn" onclick="closeToolbar()" style="color:#666">✕</button>
+</div>
+
+<!-- BOOKMARK PANEL -->
+<div class="panel" id="bookmarkPanel">
+  <div class="panel-header">
+    <span class="panel-title">🔖 My Bookmarks</span>
+    <button class="panel-close" onclick="closePanel('bookmarkPanel')">✕</button>
+  </div>
+  <div class="panel-body" id="bookmarkBody"></div>
+</div>
+
+<!-- READING PLANS PANEL -->
+<div class="panel" id="plansPanel">
+  <div class="panel-header">
+    <span class="panel-title">📖 Reading Plans</span>
+    <button class="panel-close" onclick="closePanel('plansPanel')">✕</button>
+  </div>
+  <div class="panel-body" id="plansBody"></div>
+</div>
+
+<!-- AUDIO PANEL -->
+<div class="panel" id="audioPanel">
+  <div class="panel-header">
+    <span class="panel-title">🔊 Audio Bible</span>
+    <button class="panel-close" onclick="closePanel('audioPanel')">✕</button>
+  </div>
+  <div class="panel-body">
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Listen to the current chapter read aloud in a clear, natural voice.</p>
+    <div style="background:var(--dark3);border-radius:10px;padding:1.2rem;margin-bottom:1rem;text-align:center">
+      <div style="font-size:0.72rem;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem">Now Playing</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text);margin-bottom:0.3rem" id="audioPanelTitle">Select a chapter</div>
+      <div style="font-size:0.75rem;color:var(--text-muted)">King James Version</div>
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+      <button onclick="changeRate(0.8)" class="wp-bg-btn" id="rate08">0.8x</button>
+      <button onclick="changeRate(1.0)" class="wp-bg-btn active" id="rate10">1.0x</button>
+      <button onclick="changeRate(1.2)" class="wp-bg-btn" id="rate12">1.2x</button>
+      <button onclick="changeRate(1.5)" class="wp-bg-btn" id="rate15">1.5x</button>
+    </div>
+    <button onclick="startAudio()" style="width:100%;background:var(--gold);color:var(--dark);border:none;padding:0.8rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.9rem;font-family:'Inter',sans-serif">▶ Read This Chapter Aloud</button>
+  </div>
+</div>
+
+<!-- NOTE PANEL -->
+<div class="panel" id="notePanel">
+  <div class="panel-header">
+    <span class="panel-title">✏️ Add Note</span>
+    <button class="panel-close" onclick="closePanel('notePanel')">✕</button>
+  </div>
+  <div class="panel-body">
+    <div id="noteVerseDisplay" style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem;padding:0.8rem;background:var(--dark3);border-radius:8px;line-height:1.6"></div>
+    <textarea class="note-input" id="noteInput" placeholder="Write your thoughts, prayer, or reflection..."></textarea>
+    <button class="note-save-btn" onclick="saveNote()">Save Note</button>
+  </div>
+</div>
+
+<!-- WALLPAPER PANEL -->
+<div class="panel" id="wallpaperPanel">
+  <div class="panel-header">
+    <span class="panel-title">🖼️ Verse Card</span>
+    <button class="panel-close" onclick="closePanel('wallpaperPanel')">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="wp-preview" id="wpPreview"></div>
+    <div class="wp-btn-row">
+      <button class="wp-bg-btn active" onclick="setWpBg('dark')" id="wpDark">Dark</button>
+      <button class="wp-bg-btn" onclick="setWpBg('gold')" id="wpGold">Gold</button>
+      <button class="wp-bg-btn" onclick="setWpBg('parchment')" id="wpParchment">Parchment</button>
+      <button class="wp-bg-btn" onclick="setWpBg('night')" id="wpNight">Night</button>
+    </div>
+    <button class="wp-dl-btn" onclick="downloadCard()" style="margin-top:0.5rem">⬇ Save Image</button>
+    <button class="wp-dl-btn" onclick="shareCard()" style="margin-top:0.5rem;background:var(--dark3);color:var(--text);border:1px solid var(--border)">↗ Share Card</button>
+  </div>
+</div>
+
+<script>
+const BOOKS=["Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Ruth","1 Samuel","2 Samuel","1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra","Nehemiah","Esther","Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel","Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah","Haggai","Zechariah","Malachi","Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians","Galatians","Ephesians","Philippians","Colossians","1 Thessalonians","2 Thessalonians","1 Timothy","2 Timothy","Titus","Philemon","Hebrews","James","1 Peter","2 Peter","1 John","2 John","3 John","Jude","Revelation"];
+const OT=BOOKS.slice(0,39),NT=BOOKS.slice(39);
+// Bible loaded from local server
+
+const VOTD_LIST=[
+  {v:"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",r:"John 3:16"},
+  {v:"I can do all things through Christ which strengtheneth me.",r:"Philippians 4:13"},
+  {v:"The LORD is my shepherd; I shall not want.",r:"Psalms 23:1"},
+  {v:"Trust in the LORD with all thine heart; and lean not unto thine own understanding.",r:"Proverbs 3:5"},
+  {v:"Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go.",r:"Joshua 1:9"},
+  {v:"And we know that all things work together for good to them that love God.",r:"Romans 8:28"},
+  {v:"For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",r:"Jeremiah 29:11"},
+  {v:"But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles.",r:"Isaiah 40:31"},
+  {v:"The name of the LORD is a strong tower: the righteous runneth into it, and is safe.",r:"Proverbs 18:10"},
+  {v:"Delight thyself also in the LORD; and he shall give thee the desires of thine heart.",r:"Psalms 37:4"},
+  {v:"No weapon that is formed against thee shall prosper.",r:"Isaiah 54:17"},
+  {v:"This is the day which the LORD hath made; we will rejoice and be glad in it.",r:"Psalms 118:24"},
+  {v:"Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you.",r:"Matthew 7:7"},
+  {v:"But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you.",r:"Matthew 6:33"}
+];
+
+const READING_PLANS=[
+  {id:'year',name:'Bible in a Year',desc:'Read through all 66 books in 365 days',days:365,books:BOOKS},
+  {id:'ninety',name:'90-Day Challenge',desc:'Complete the entire Bible in 90 days',days:90,books:BOOKS},
+  {id:'psalms',name:'Psalms & Proverbs',desc:'30 days of wisdom literature',days:30,books:['Psalms','Proverbs']},
+  {id:'nt',name:'New Testament in 30 Days',desc:'Journey through all 27 NT books',days:30,books:NT},
+  {id:'gospels',name:'The Gospels',desc:'Matthew, Mark, Luke and John — 28 days',days:28,books:['Matthew','Mark','Luke','John']},
+  {id:'foundations',name:'Foundations of Faith',desc:'Romans, Galatians, Ephesians — 21 days',days:21,books:['Romans','Galatians','Ephesians']}
+];
+
+let currentBook="John",currentChapter=1,currentVerseData=[];
+let selectedVerse=null,selectedVerseText="";
+let highlights=JSON.parse(localStorage.getItem('ob_hl')||'{}');
+let bookmarks=JSON.parse(localStorage.getItem('ob_bm')||'[]');
+let notes=JSON.parse(localStorage.getItem('ob_notes')||'{}');
+let readChapters=JSON.parse(localStorage.getItem('ob_read')||'{}');
+let activePlan=localStorage.getItem('ob_plan')||null;
+let planProgress=JSON.parse(localStorage.getItem('ob_plan_prog')||'{}');
+let streak=parseInt(localStorage.getItem('ob_streak')||'0');
+let lastRead=localStorage.getItem('ob_lastread')||'';
+let speechRate=1.0;
+let bibleCache={};
+let speechUtterance=null;
+let isSpeaking=false;
+let wpBg='dark';
+
+// UPDATE STREAK
+function updateStreak(){
+  const today=new Date().toDateString();
+  if(lastRead!==today){
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    if(lastRead===yesterday) streak++;
+    else if(lastRead==='') streak=1;
+    else streak=1;
+    lastRead=today;
+    localStorage.setItem('ob_streak',streak);
+    localStorage.setItem('ob_lastread',lastRead);
+  }
+  document.getElementById('streakBadge').textContent='🔥 '+streak;
+  document.getElementById('streakCount').textContent=streak;
+}
+
+// VOTD
+function showVotd(){
+  const votd=VOTD_LIST[new Date().getDate()%VOTD_LIST.length];
+  document.getElementById('votdText').textContent='"'+votd.v+'"';
+  document.getElementById('votdRef').textContent='— '+votd.r;
+  document.getElementById('votdOverlay').style.display='flex';
+}
+function closeVotd(){
+  document.getElementById('votdOverlay').style.display='none';
+  updateStreak();
+}
+
+// SPLASH + INIT
+window.addEventListener('load',()=>{
+  buildSidebar('sidebar');buildSidebar('mobileSidebarContent');
+  loadChapter(currentBook,currentChapter);
+  loadDevo();loadBookmarkPanel();loadPlansPanel();
+  setTimeout(()=>{
+    document.getElementById('splash').style.opacity='0';
+    document.getElementById('splash').style.transition='opacity 0.5s';
+    setTimeout(()=>{
+      document.getElementById('splash').style.display='none';
+      const shown=sessionStorage.getItem('votd_shown');
+      if(!shown){showVotd();sessionStorage.setItem('votd_shown','1');}
+      else updateStreak();
+    },500);
+  },2300);
+});
+
+function loadDevo(){
+  const quotes=[
+    "For God so loved the world — John 3:16",
+    "I can do all things through Christ — Philippians 4:13",
+    "The Lord is my shepherd — Psalms 23:1",
+    "Trust in the LORD with all thine heart — Proverbs 3:5",
+    "Be strong and courageous — Joshua 1:9",
+    "All things work together for good — Romans 8:28",
+    "I know the thoughts I think toward you — Jeremiah 29:11"
+  ];
+  const el=document.getElementById('devoQuote');
+  if(el) el.textContent=quotes[new Date().getDay()];
+}
+
+function buildSidebar(id){
+  const el=document.getElementById(id);if(!el)return;
+  let h='';
+  h+='<div class="testament-header">Old Testament</div>';
+  OT.forEach(b=>{const rk=b.replace(/ /g,'_');const isRead=readChapters[rk]&&readChapters[rk].length>0;h+=`<div class="book-item ${b===currentBook?'active':''} ${isRead?'read':''}" onclick="selectBook('${b}','${id}')">${b}<span class="book-read-dot"></span></div>`;});
+  h+='<div class="testament-header">New Testament</div>';
+  NT.forEach(b=>{const rk=b.replace(/ /g,'_');const isRead=readChapters[rk]&&readChapters[rk].length>0;h+=`<div class="book-item ${b===currentBook?'active':''} ${isRead?'read':''}" onclick="selectBook('${b}','${id}')">${b}<span class="book-read-dot"></span></div>`;});
+  el.innerHTML=h;
+}
+
+function selectBook(book,src){
+  currentBook=book;currentChapter=1;
+  buildSidebar('sidebar');buildSidebar('mobileSidebarContent');
+  loadChapter(book,1);
+  if(src==='mobileSidebarContent')toggleMobile();
+}
+
+async function loadChapter(book,chapter){
+  const reader=document.getElementById('reader');
+  reader.innerHTML='<div class="loading">✝ Loading '+book+' '+chapter+'...</div>';
+  try{
+    let data;const ck=book.replace(/ /g,'_');
+    if(bibleCache[ck]){data=bibleCache[ck];}
+    else{
+      if(!window._bibleData){const r=await fetch('/bible.json');window._bibleData=await r.json();}
+      const bk=Object.keys(window._bibleData).find(k=>k.toLowerCase()===book.replace(/ /g,'').toLowerCase())||book.replace(/ /g,'');
+      const rawChapters=window._bibleData[bk]||[];
+      // Normalize: each chapter is {chapter, verses:[{verse,text}]} -> convert to array of verse-text arrays
+      const normalized=rawChapters.map(ch=>{
+        if(Array.isArray(ch)) return ch;
+        if(ch.verses) return ch.verses.map(v=>v.text||v);
+        return [];
+      });
+      data={chapters:normalized};
+      bibleCache[ck]=data;
+    }
+    const chapters=data.chapters||[];const total=chapters.length;
+    buildChapterNav(book,total,chapter);
+    const verses=chapters[chapter-1]||[];currentVerseData=verses;
+
+    // Mark as read
+    const rk=book.replace(/ /g,'_');
+    if(!readChapters[rk])readChapters[rk]=[];
+    if(!readChapters[rk].includes(chapter)){readChapters[rk].push(chapter);localStorage.setItem('ob_read',JSON.stringify(readChapters));}
+    updateStreak();
+
+    const hKey=book+'_'+chapter;
+    const pct=activePlan?getPlanProgress():null;
+
+    let h=`<div class="book-chapter-title">${book} ${chapter}</div>`;
+    h+=`<div class="book-chapter-sub"><span>King James Version · One Body Bible</span>`;
+    if(pct!==null)h+=`<span class="progress-pill">📖 ${pct}% complete</span>`;
+    h+=`</div>`;
+
+    if(activePlan){
+      const p=READING_PLANS.find(x=>x.id===activePlan);
+      const prog=planProgress[activePlan]||0;
+      const pct2=Math.round((prog/p.days)*100);
+      h+=`<div class="plan-banner"><span>📅</span><div style="flex:1"><div class="plan-text"><strong>${p.name}</strong> — Day ${prog} of ${p.days}</div><div class="plan-progress-bar" style="margin-top:0.4rem"><div class="plan-progress-fill" style="width:${pct2}%"></div></div></div></div>`;
+    }
+
+    verses.forEach((verse,i)=>{
+      const vn=i+1;
+      const hlClass=highlights[hKey]&&highlights[hKey][vn]?`highlighted-${highlights[hKey][vn]}`:'';
+      const bmClass=bookmarks.find(b=>b.book===book&&b.chapter===chapter&&b.verse===vn)?'bookmarked':'';
+      const note=notes[hKey+'_'+vn];
+      h+=`<div class="verse-wrap ${hlClass} ${bmClass}" id="v${vn}" onclick="selectVerse(${vn},'${book}',${chapter})">
+        <span class="verse-num">${vn}</span>
+        <div><span class="verse-text">${verse}</span>${note?`<div class="verse-note">📝 ${note}</div>`:''}</div>
+      </div>`;
+    });
+
+    h+=`<div style="display:flex;gap:0.8rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);font-family:'Inter',sans-serif">`;
+    if(chapter>1)h+=`<button onclick="loadChapter('${book}',${chapter-1})" style="background:var(--dark3);border:1px solid var(--border);color:var(--text-muted);padding:0.65rem 1.2rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-family:'Inter',sans-serif">← ${book} ${chapter-1}</button>`;
+    h+=`<div style="flex:1"></div>`;
+    if(chapter<total)h+=`<button onclick="loadChapter('${book}',${chapter+1})" style="background:var(--gold);border:none;color:#0D0B09;padding:0.65rem 1.2rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:700;font-family:'Inter',sans-serif">${book} ${chapter+1} →</button>`;
+    h+=`</div>`;
+
+    reader.innerHTML=h;reader.scrollTop=0;currentChapter=chapter;
+    document.querySelectorAll('.chapter-btn').forEach(b=>b.classList.remove('active'));
+    const ab=document.getElementById('ch_'+chapter);if(ab)ab.classList.add('active');
+    document.getElementById('audioPanelTitle').textContent=book+' '+chapter;
+    document.getElementById('audioTitle').textContent='Reading: '+book+' '+chapter;
+    buildSidebar('sidebar');buildSidebar('mobileSidebarContent');
+  }catch(e){reader.innerHTML='<div class="loading">Error loading chapter. Please check your connection.</div>';}
+}
+
+function buildChapterNav(book,total,active){
+  const nav=document.getElementById('chapterNav');
+  const rk=book.replace(/ /g,'_');const readList=readChapters[rk]||[];
+  let h='';
+  for(let i=1;i<=total;i++){
+    const isRead=readList.includes(i);
+    h+=`<button class="chapter-btn ${i===active?'active':''} ${isRead&&i!==active?'read':''}" id="ch_${i}" onclick="loadChapter('${book}',${i})">${i}</button>`;
+  }
+  nav.innerHTML=h;
+}
+
+function getPlanProgress(){
+  if(!activePlan)return null;
+  const p=READING_PLANS.find(x=>x.id===activePlan);
+  const prog=planProgress[activePlan]||0;
+  return Math.round((prog/p.days)*100);
+}
+
+// VERSE SELECTION
+function selectVerse(num,book,chapter){
+  selectedVerse={num,book,chapter};
+  selectedVerseText=currentVerseData[num-1]||'';
+  document.querySelectorAll('.verse-wrap').forEach(v=>v.style.outline='');
+  const el=document.getElementById('v'+num);
+  if(el)el.style.outline='1px solid var(--gold)';
+  document.getElementById('vToolbar').classList.add('visible');
+}
+function closeToolbar(){
+  document.getElementById('vToolbar').classList.remove('visible');
+  document.querySelectorAll('.verse-wrap').forEach(v=>v.style.outline='');
+  selectedVerse=null;
+}
+
+function highlightVerse(color){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const hKey=book+'_'+chapter;
+  if(!highlights[hKey])highlights[hKey]={};
+  if(highlights[hKey][num]===color){delete highlights[hKey][num];}
+  else{highlights[hKey][num]=color;}
+  localStorage.setItem('ob_hl',JSON.stringify(highlights));
+  loadChapter(book,chapter);closeToolbar();
+}
+
+function bookmarkVerse(){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const exists=bookmarks.findIndex(b=>b.book===book&&b.chapter===chapter&&b.verse===num);
+  if(exists>-1){bookmarks.splice(exists,1);}
+  else{bookmarks.push({book,chapter,verse:num,text:selectedVerseText,date:new Date().toDateString()});}
+  localStorage.setItem('ob_bm',JSON.stringify(bookmarks));
+  loadBookmarkPanel();loadChapter(book,chapter);closeToolbar();
+}
+
+function addNote(){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const hKey=book+'_'+chapter+'_'+num;
+  document.getElementById('noteVerseDisplay').textContent='"'+selectedVerseText+'" — '+book+' '+chapter+':'+num;
+  document.getElementById('noteInput').value=notes[hKey]||'';
+  document.getElementById('noteInput').dataset.key=hKey;
+  document.getElementById('noteInput').dataset.book=book;
+  document.getElementById('noteInput').dataset.chapter=chapter;
+  closeToolbar();togglePanel('notePanel');
+}
+function saveNote(){
+  const inp=document.getElementById('noteInput');
+  const key=inp.dataset.key;const book=inp.dataset.book;const chapter=parseInt(inp.dataset.chapter);
+  notes[key]=inp.value.trim();
+  localStorage.setItem('ob_notes',JSON.stringify(notes));
+  closePanel('notePanel');loadChapter(book,chapter);
+}
+
+function copyVerse(){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const text=`"${selectedVerseText}" — ${book} ${chapter}:${num} KJV · One Body Bible`;
+  navigator.clipboard.writeText(text).catch(()=>{});
+  closeToolbar();showToast('Verse copied!');
+}
+
+function shareVerse(){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const text=`"${selectedVerseText}" — ${book} ${chapter}:${num} KJV\n\nRead more at https://onebodybible.com`;
+  if(navigator.share)navigator.share({text});
+  else navigator.clipboard.writeText(text).catch(()=>{});
+  closeToolbar();
+}
+
+// WALLPAPER
+const WP_STYLES={
+  dark:{bg:'linear-gradient(145deg,#1a1200,#0d0b09)',text:'#F0EBE0',accent:'#C9A84C'},
+  gold:{bg:'linear-gradient(145deg,#8B6914,#C9A84C)',text:'#0D0B09',accent:'#0D0B09'},
+  parchment:{bg:'linear-gradient(145deg,#F5F0E0,#EDE0C0)',text:'#2a1a0a',accent:'#8B6914'},
+  night:{bg:'linear-gradient(145deg,#050a1a,#0a1530)',text:'#E0E8FF',accent:'#6496FF'}
+};
+function makeWallpaper(){
+  if(!selectedVerse)return;
+  updateWpPreview();closeToolbar();togglePanel('wallpaperPanel');
+}
+function setWpBg(bg){
+  wpBg=bg;
+  ['dark','gold','parchment','night'].forEach(b=>{
+    const el=document.getElementById('wp'+b.charAt(0).toUpperCase()+b.slice(1));
+    if(el)el.classList.toggle('active',b===bg);
+  });
+  updateWpPreview();
+}
+function updateWpPreview(){
+  if(!selectedVerse)return;
+  const{num,book,chapter}=selectedVerse;
+  const s=WP_STYLES[wpBg];
+  const el=document.getElementById('wpPreview');
+  el.style.background=s.bg;el.style.color=s.text;
+  el.innerHTML=`<div style="width:100%"><div style="font-size:1.5rem;margin-bottom:0.8rem">✝</div><div style="font-family:'Playfair Display',serif;font-style:italic;font-size:0.95rem;line-height:1.7;margin-bottom:1rem">"${selectedVerseText}"</div><div style="font-size:0.75rem;font-weight:700;letter-spacing:0.05em;color:${s.accent}">${book} ${chapter}:${num} KJV</div><div style="font-size:0.6rem;margin-top:0.5rem;opacity:0.6;font-family:'Inter',sans-serif">One Body Bible</div></div>`;
+}
+function downloadCard(){showToast('Hold down on the card to save the image!');}
+function shareCard(){
+  const text=selectedVerse?`"${selectedVerseText}" — ${selectedVerse.book} ${selectedVerse.chapter}:${selectedVerse.num} KJV\n\nOne Body Bible · onebodybible.com`:'';
+  if(navigator.share)navigator.share({text});
+  else navigator.clipboard.writeText(text).catch(()=>{});
+}
+
+// BOOKMARKS PANEL
+function loadBookmarkPanel(){
+  const el=document.getElementById('bookmarkBody');
+  if(!el)return;
+  if(bookmarks.length===0){el.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:2rem">No bookmarks yet.<br>Tap a verse and press 🔖 to save it.</p>';return;}
+  let h='';
+  [...bookmarks].reverse().forEach(bm=>{
+    h+=`<div class="bm-item" onclick="loadChapter('${bm.book}',${bm.chapter});closePanel('bookmarkPanel')">
+      <div class="bm-ref">${bm.book} ${bm.chapter}:${bm.verse} · ${bm.date}</div>
+      <div class="bm-text">"${bm.text}"</div>
+    </div>`;
+  });
+  el.innerHTML=h;
+}
+
+// READING PLANS
+function loadPlansPanel(){
+  const el=document.getElementById('plansBody');if(!el)return;
+  let h='<p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem">Choose a structured reading plan to stay consistent in the Word.</p>';
+  READING_PLANS.forEach(p=>{
+    const prog=planProgress[p.id]||0;const pct=Math.round((prog/p.days)*100);const isActive=activePlan===p.id;
+    h+=`<div class="rp-card ${isActive?'active':''}" onclick="activatePlan('${p.id}')">
+      <div class="rp-name">${p.name} ${isActive?'✓':''}</div>
+      <div class="rp-desc">${p.desc}</div>
+      <div class="rp-bar"><div class="rp-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem">${prog}/${p.days} days · ${pct}%</div>
+    </div>`;
+  });
+  el.innerHTML=h;
+}
+function activatePlan(id){
+  activePlan=activePlan===id?null:id;
+  localStorage.setItem('ob_plan',activePlan||'');
+  if(activePlan&&!planProgress[activePlan])planProgress[activePlan]=0;
+  loadPlansPanel();loadChapter(currentBook,currentChapter);
+  if(activePlan)showToast('Reading plan activated!');
+}
+
+// AUDIO
+function startAudio(){
+  if(!window.speechSynthesis)return showToast('Audio not supported on this browser');
+  stopAudio();
+  const text=currentVerseData.map((v,i)=>`Verse ${i+1}. ${v}`).join(' ');
+  speechUtterance=new SpeechSynthesisUtterance(text);
+  speechUtterance.rate=speechRate;speechUtterance.pitch=1;speechUtterance.volume=1;
+  speechUtterance.onend=()=>{isSpeaking=false;document.getElementById('audioPlayBtn').textContent='▶';};
+  window.speechSynthesis.speak(speechUtterance);
+  isSpeaking=true;
+  document.getElementById('audioBar').classList.add('visible');
+  document.getElementById('audioPlayBtn').textContent='⏸';
+  closePanel('audioPanel');showToast('Audio started');
+}
+function toggleAudio(){
+  if(!window.speechSynthesis)return;
+  if(window.speechSynthesis.paused){window.speechSynthesis.resume();isSpeaking=true;document.getElementById('audioPlayBtn').textContent='⏸';}
+  else if(isSpeaking){window.speechSynthesis.pause();document.getElementById('audioPlayBtn').textContent='▶';}
+  else{startAudio();}
+}
+function stopAudio(){
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  isSpeaking=false;
+  document.getElementById('audioBar').classList.remove('visible');
+  document.getElementById('audioPlayBtn').textContent='▶';
+}
+function changeRate(r){
+  speechRate=r;
+  ['08','10','12','15'].forEach(x=>{const el=document.getElementById('rate'+x);if(el)el.classList.remove('active');});
+  const key='rate'+(r*10).toFixed(0).replace('.','');
+  const btn=document.getElementById(key.length===3?key:'rate'+Math.round(r*10));
+  ['rate08','rate10','rate12','rate15'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.toggle('active',e.id==='rate'+String(r).replace('.',''));});
+  showToast('Speed: '+r+'x');
+}
+
+// PANELS
+function togglePanel(id){
+  const p=document.getElementById(id);if(!p)return;
+  const isOpen=p.classList.contains('open');
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('open'));
+  if(!isOpen)p.classList.add('open');
+}
+function closePanel(id){const p=document.getElementById(id);if(p)p.classList.remove('open');}
+
+// THEME
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const btn=document.getElementById('themeBtn');
+  btn.textContent=document.body.classList.contains('light')?'🌑':'🌙';
+  localStorage.setItem('ob_theme',document.body.classList.contains('light')?'light':'dark');
+}
+
+// MOBILE TABS
+function mobileTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));
+  if(tab==='bookmark')togglePanel('bookmarkPanel');
+  else if(tab==='plans')togglePanel('plansPanel');
+  else if(tab==='audio')togglePanel('audioPanel');
+  else if(tab==='books')toggleMobile();
+}
+
+// MOBILE MENU
+function toggleMobile(){
+  document.getElementById('mobileOverlay').classList.toggle('open');
+  document.getElementById('mobileSidebar').classList.toggle('open');
+}
+
+// SEARCH
+function searchScripture(e){
+  if(e.key!=='Enter')return;
+  const q=e.target.value.trim();if(!q)return;
+  const ref=q.match(/^(\d?\s?[a-zA-Z ]+)\s+(\d+):?(\d+)?$/);
+  if(ref){
+    const bookSearch=ref[1].trim();const chap=parseInt(ref[2]);const verse=ref[3]?parseInt(ref[3]):null;
+    const found=BOOKS.find(b=>b.toLowerCase().startsWith(bookSearch.toLowerCase()));
+    if(found){
+      currentBook=found;
+      loadChapter(found,chap).then(()=>{
+        if(verse)setTimeout(()=>{const el=document.getElementById('v'+verse);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='1px solid var(--gold)';}},600);
+      });
+      buildSidebar('sidebar');buildSidebar('mobileSidebarContent');
+      e.target.value='';
+    }
+  }
+}
+
+// TOAST
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--gold);color:var(--text);padding:0.5rem 1.2rem;border-radius:20px;font-size:0.8rem;font-family:Inter,sans-serif;z-index:999;opacity:0;transition:opacity 0.3s';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';},2000);
+}
+
+// RESTORE THEME
+if(localStorage.getItem('ob_theme')==='light'){document.body.classList.add('light');document.getElementById('themeBtn').textContent='🌑';}
+</script>
+
+<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#b8860b;text-align:center;padding:8px 16px;font-size:11px;font-family:Georgia,serif;z-index:9999;border-top:1px solid #b8860b33;">
+  ✝ <strong style="color:#ffd700;">One Body Bible</strong> &nbsp;|&nbsp; &copy; 2026 <strong style="color:#ffd700;">Swelerion Global Inc.</strong> &nbsp;|&nbsp; Founded by <strong style="color:#ffd700;">Prexy Sam Ola</strong> &nbsp;|&nbsp; KJV &mdash; Public Domain &nbsp;|&nbsp; <span id="installBtn" onclick="installApp()" style="display:none;cursor:pointer;color:#ffd700;border:1px solid #ffd700;padding:2px 8px;border-radius:4px;font-size:10px;">📲 Install App</span>
+</div>
+
+<script>
+// PWA Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/sw.js')
+      .then(r=>console.log('SW registered'))
+      .catch(e=>console.log('SW error',e));
+  });
+}
+
+// PWA Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  const btn=document.getElementById('installBtn');
+  if(btn) btn.style.display='flex';
+});
+
+function installApp(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(r=>{
+      deferredPrompt=null;
+      const btn=document.getElementById('installBtn');
+      if(btn) btn.style.display='none';
+    });
+  }
+}
+
+// Daily Devotional
+async function loadDevotion(){
+  const devotions=[
+    {ref:'John 3:16', text:'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.', message:'God's love for you is unconditional and eternal. You are never too far gone for His grace.'},
+    {ref:'Psalm 23:1', text:'The LORD is my shepherd; I shall not want.', message:'When God leads you, you lack nothing. Trust His guidance today.'},
+    {ref:'Proverbs 3:5-6', text:'Trust in the LORD with all thine heart; and lean not unto thine own understanding.', message:'Release control today. God's plan is greater than your understanding.'},
+    {ref:'Isaiah 40:31', text:'But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles.', message:'Your waiting is not wasted. God is preparing you for elevation.'},
+    {ref:'Philippians 4:13', text:'I can do all things through Christ which strengtheneth me.', message:'Whatever mountain you face today — you are equipped. Christ is your strength.'},
+    {ref:'Romans 8:28', text:'And we know that all things work together for good to them that love God.', message:'Nothing in your life is wasted. Even the hard seasons are working for your good.'},
+    {ref:'Jeremiah 29:11', text:'For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.', message:'God has a specific plan for your life. Not a generic plan — YOUR plan.'},
+  ];
+  const day = new Date().getDay();
+  const d = devotions[day];
+  document.getElementById('devo-ref').textContent = d.ref;
+  document.getElementById('devo-verse').textContent = '"' + d.text + '"';
+  document.getElementById('devo-message').textContent = d.message;
+}
+
+// Load devotion on page load
+window.addEventListener('DOMContentLoaded', loadDevotion);
+</script>
+
+
+<div id="devotionPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0d0500;z-index:8888;overflow-y:auto;padding:20px 16px 100px;">
+  <div style="max-width:600px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <h2 style="color:#ffd700;font-family:Georgia,serif;font-size:22px;margin:0;">✝ Daily Devotional</h2>
+      <button onclick="document.getElementById('devotionPanel').style.display='none'" style="background:none;border:1px solid #b8860b;color:#ffd700;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">✕ Close</button>
+    </div>
+    <div style="background:#1a0800;border:1px solid #b8860b44;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div id="devo-ref" style="color:#ffd700;font-size:13px;font-weight:bold;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;"></div>
+      <div id="devo-verse" style="color:#f5e6c8;font-family:Georgia,serif;font-size:18px;line-height:1.7;font-style:italic;margin-bottom:16px;"></div>
+      <div id="devo-message" style="color:#c8a96e;font-size:14px;line-height:1.7;border-top:1px solid #b8860b33;padding-top:16px;"></div>
+    </div>
+    <div style="text-align:center;color:#6b5a3e;font-size:12px;">
+      One Body Bible · A Swelerion Global Inc. Platform<br>Founded by Prexy Sam Ola
+    </div>
+  </div>
+</div>
+
+
+<!-- GIVE MODAL -->
+<div id="giveModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:9500;overflow-y:auto;padding:20px 16px 120px;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <h2 style="color:#ffd700;font-family:Georgia,serif;font-size:22px;margin:0;">🙏 Support the Ministry</h2>
+      <button onclick="document.getElementById('giveModal').style.display='none'" style="background:none;border:1px solid #b8860b;color:#ffd700;padding:6px 14px;border-radius:6px;cursor:pointer;">✕</button>
+    </div>
+    <p style="color:#c8a96e;font-size:14px;line-height:1.7;margin-bottom:20px;">Your giving keeps the Word of God free and accessible to millions. Every seed sown into One Body Bible is a seed into the Kingdom.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <button onclick="selectAmount(5)" class="amt-btn" data-amt="5" style="background:#1a0800;border:2px solid #b8860b44;color:#ffd700;padding:14px;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold;">$5</button>
+      <button onclick="selectAmount(10)" class="amt-btn" data-amt="10" style="background:#1a0800;border:2px solid #b8860b44;color:#ffd700;padding:14px;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold;">$10</button>
+      <button onclick="selectAmount(25)" class="amt-btn" data-amt="25" style="background:#1a0800;border:2px solid #b8860b44;color:#ffd700;padding:14px;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold;">$25</button>
+      <button onclick="selectAmount(50)" class="amt-btn" data-amt="50" style="background:#1a0800;border:2px solid #b8860b44;color:#ffd700;padding:14px;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold;">$50</button>
+      <button onclick="selectAmount(100)" class="amt-btn" data-amt="100" style="background:#1a0800;border:2px solid #b8860b44;color:#ffd700;padding:14px;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold;">$100</button>
+      <button onclick="selectAmount(0)" class="amt-btn" data-amt="0" style="background:#1a0800;border:2px solid #b8860b44;color:#ffd700;padding:14px;border-radius:10px;cursor:pointer;font-size:14px;">Other</button>
+    </div>
+    <div id="customAmtDiv" style="display:none;margin-bottom:16px;">
+      <input id="customAmt" type="number" placeholder="Enter amount ($)" style="width:100%;background:#1a0800;border:1px solid #b8860b;color:#ffd700;padding:12px;border-radius:8px;font-size:16px;box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:16px;">
+      <input id="giveName" type="text" placeholder="Your name (optional)" style="width:100%;background:#1a0800;border:1px solid #b8860b44;color:#f5e6c8;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+      <input id="giveEmail" type="email" placeholder="Email for receipt (optional)" style="width:100%;background:#1a0800;border:1px solid #b8860b44;color:#f5e6c8;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;">
+    </div>
+    <button onclick="processGift()" style="width:100%;background:linear-gradient(135deg,#b8860b,#ffd700);color:#0d0500;padding:16px;border:none;border-radius:10px;font-size:17px;font-weight:bold;cursor:pointer;margin-bottom:12px;">💛 Give Now</button>
+    <p style="color:#6b5a3e;font-size:11px;text-align:center;">Secure payment powered by Stripe · One Body Bible · Swelerion Global Inc.</p>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div id="premiumModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:9500;overflow-y:auto;padding:20px 16px 120px;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <h2 style="color:#ffd700;font-family:Georgia,serif;font-size:22px;margin:0;">👑 One Body Premium</h2>
+      <button onclick="document.getElementById('premiumModal').style.display='none'" style="background:none;border:1px solid #b8860b;color:#ffd700;padding:6px 14px;border-radius:6px;cursor:pointer;">✕</button>
+    </div>
+    <div style="background:linear-gradient(135deg,#1a0800,#2d1500);border:1px solid #ffd700;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">✝</div>
+      <div style="color:#ffd700;font-size:32px;font-weight:bold;font-family:Georgia,serif;">$4.99<span style="font-size:16px;color:#c8a96e;">/month</span></div>
+      <div style="color:#c8a96e;font-size:13px;margin-top:4px;">Cancel anytime</div>
+    </div>
+    <div style="margin-bottom:24px;">
+      <div style="color:#c8a96e;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">What you get:</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Exclusive sermons from Prexy Sam Ola</div>
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Deep-dive personal devotionals</div>
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Full One Body Church sermon library</div>
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Prayer wall — submit & receive prayer</div>
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Premium verse card designs</div>
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Ad-free experience forever</div>
+        <div style="display:flex;align-items:center;gap:10px;color:#f5e6c8;font-size:14px;">✅ Early access to new features</div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <input id="premEmail" type="email" placeholder="Your email address *" style="width:100%;background:#1a0800;border:1px solid #b8860b;color:#f5e6c8;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+      <input id="premName" type="text" placeholder="Your name *" style="width:100%;background:#1a0800;border:1px solid #b8860b44;color:#f5e6c8;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;">
+    </div>
+    <button onclick="startPremium()" style="width:100%;background:linear-gradient(135deg,#b8860b,#ffd700);color:#0d0500;padding:16px;border:none;border-radius:10px;font-size:17px;font-weight:bold;cursor:pointer;margin-bottom:12px;">👑 Start Premium — $4.99/mo</button>
+    <p style="color:#6b5a3e;font-size:11px;text-align:center;">Secure payment powered by Stripe · Swelerion Global Inc.</p>
+  </div>
+</div>
+
+<!-- GIVE + PREMIUM BUTTONS — floating -->
+<div style="position:fixed;bottom:48px;right:16px;display:flex;flex-direction:column;gap:10px;z-index:8000;">
+  <button onclick="document.getElementById('premiumModal').style.display='block'" style="background:linear-gradient(135deg,#b8860b,#ffd700);color:#0d0500;border:none;padding:12px 16px;border-radius:50px;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 4px 20px rgba(184,134,11,0.4);">👑 Premium</button>
+  <button onclick="document.getElementById('giveModal').style.display='block'" style="background:#0d0500;border:2px solid #ffd700;color:#ffd700;padding:12px 16px;border-radius:50px;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 4px 20px rgba(184,134,11,0.2);">🙏 Give</button>
+</div>
+
+<script>
+let selectedAmt = 10;
+
+function selectAmount(amt){
+  selectedAmt = amt;
+  document.querySelectorAll('.amt-btn').forEach(b=>{
+    b.style.borderColor = parseInt(b.dataset.amt)===amt ? '#ffd700' : '#b8860b44';
+    b.style.background = parseInt(b.dataset.amt)===amt ? '#2d1500' : '#1a0800';
+  });
+  document.getElementById('customAmtDiv').style.display = amt===0 ? 'block' : 'none';
+}
+
+function processGift(){
+  const amt = selectedAmt===0 ? parseFloat(document.getElementById('customAmt').value) : selectedAmt;
+  if(!amt || amt < 1){ alert('Please select or enter a gift amount.'); return; }
+  const name = document.getElementById('giveName').value || 'Anonymous';
+  const email = document.getElementById('giveEmail').value;
+  // Redirect to Stripe donation link (to be configured)
+  const msg = encodeURIComponent('One Body Bible Ministry Gift - $' + amt + ' from ' + name);
+  window.open('https://buy.stripe.com/OBB_DONATE_LINK?prefilled_email=' + encodeURIComponent(email) + '&prefilled_promo_code=&client_reference_id=' + msg, '_blank');
+}
+
+function startPremium(){
+  const email = document.getElementById('premEmail').value;
+  const name = document.getElementById('premName').value;
+  if(!email || !name){ alert('Please enter your name and email.'); return; }
+  // Redirect to Stripe subscription checkout
+  window.open('https://buy.stripe.com/OBB_PREMIUM_LINK?prefilled_email=' + encodeURIComponent(email), '_blank');
+}
+
+// Initialize give amounts
+document.addEventListener('DOMContentLoaded', ()=>selectAmount(10));
+</script>
+
+
+<!-- CHURCH REGISTRATION SECTION -->
+<div id="churchSection" style="background:linear-gradient(180deg,#0a0020,#050010);padding:48px 16px;text-align:center;border-top:1px solid #7c3aed44;">
+  <div style="max-width:600px;margin:0 auto;">
+    <div style="display:inline-block;background:#7c3aed22;border:1px solid #7c3aed66;border-radius:20px;padding:4px 14px;margin-bottom:16px;">
+      <span style="color:#a78bfa;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;">📢 Calling All Churches & Ministries</span>
+    </div>
+    <h2 style="color:#fff;font-family:Georgia,serif;font-size:26px;margin:0 0 12px;line-height:1.3;">Your Ministry Deserves a <span style="color:#a78bfa;">Global Stage</span></h2>
+    <p style="color:#c4b5fd;font-size:15px;line-height:1.8;margin:0 0 10px;">One Body Church is a FREE Christian TV and streaming platform launching soon. Every church, pastor, evangelist, and gospel artist will have their own channel to broadcast sermons, worship, music and ministry to the entire world.</p>
+    <p style="color:#a78bfa;font-size:14px;font-style:italic;margin:0 0 24px;">No subscription. No gatekeepers. No Hollywood. Just the pure gospel going to every nation.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;text-align:left;">
+      <div style="background:#7c3aed11;border:1px solid #7c3aed33;border-radius:12px;padding:14px;">
+        <div style="font-size:22px;margin-bottom:6px;">📺</div>
+        <div style="color:#fff;font-size:13px;font-weight:bold;margin-bottom:4px;">Live Broadcasting</div>
+        <div style="color:#a78bfa;font-size:12px;">Stream your services live to believers worldwide</div>
+      </div>
+      <div style="background:#7c3aed11;border:1px solid #7c3aed33;border-radius:12px;padding:14px;">
+        <div style="font-size:22px;margin-bottom:6px;">🎙️</div>
+        <div style="color:#fff;font-size:13px;font-weight:bold;margin-bottom:4px;">Sermon Library</div>
+        <div style="color:#a78bfa;font-size:12px;">Upload and archive every message you've ever preached</div>
+      </div>
+      <div style="background:#7c3aed11;border:1px solid #7c3aed33;border-radius:12px;padding:14px;">
+        <div style="font-size:22px;margin-bottom:6px;">🎵</div>
+        <div style="color:#fff;font-size:13px;font-weight:bold;margin-bottom:4px;">Gospel Music</div>
+        <div style="color:#a78bfa;font-size:12px;">Share your worship music with millions of believers</div>
+      </div>
+      <div style="background:#7c3aed11;border:1px solid #7c3aed33;border-radius:12px;padding:14px;">
+        <div style="font-size:22px;margin-bottom:6px;">🌍</div>
+        <div style="color:#fff;font-size:13px;font-weight:bold;margin-bottom:4px;">Every Nation</div>
+        <div style="color:#a78bfa;font-size:12px;">Reach souls across Africa, America, Asia and beyond</div>
+      </div>
+    </div>
+    <p style="color:#fff;font-size:16px;font-weight:bold;margin:0 0 20px;">Register your church today. Be ready to launch.</p>
+    <div style="background:#0d0030;border:1px solid #7c3aed66;border-radius:16px;padding:24px;margin-bottom:16px;">
+      <input id="churchName" type="text" placeholder="Church / Ministry Name *" style="width:100%;background:#1a0050;border:1px solid #7c3aed44;color:#fff;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+      <input id="pastorName" type="text" placeholder="Pastor / Leader Name *" style="width:100%;background:#1a0050;border:1px solid #7c3aed44;color:#fff;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+      <input id="churchEmail" type="email" placeholder="Email Address *" style="width:100%;background:#1a0050;border:1px solid #7c3aed44;color:#fff;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+      <input id="churchCountry" type="text" placeholder="Country *" style="width:100%;background:#1a0050;border:1px solid #7c3aed44;color:#fff;padding:12px;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:16px;">
+      <button onclick="registerChurch()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;padding:14px;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,0.4);">✝ Register My Church — It's FREE</button>
+    </div>
+    <p style="color:#6b5a9e;font-size:11px;">We will notify you the moment One Body Church goes live. Reaching the Unreached Ministry · Swelerion Global Inc.</p>
+  </div>
+</div>
+
+<script>
+function registerChurch(){
+  const name = document.getElementById('churchName').value.trim();
+  const pastor = document.getElementById('pastorName').value.trim();
+  const email = document.getElementById('churchEmail').value.trim();
+  const country = document.getElementById('churchCountry').value.trim();
+  if(!name || !pastor || !email || !country){
+    alert('Please fill in all fields to register your church.');
+    return;
+  }
+  // Store in localStorage for now + show confirmation
+  const reg = {name, pastor, email, country, date: new Date().toISOString()};
+  const existing = JSON.parse(localStorage.getItem('obc_registrations') || '[]');
+  existing.push(reg);
+  localStorage.setItem('obc_registrations', JSON.stringify(existing));
+  
+  document.getElementById('churchName').value = '';
+  document.getElementById('pastorName').value = '';
+  document.getElementById('churchEmail').value = '';
+  document.getElementById('churchCountry').value = '';
+  
+  alert('✝ ' + name + ' is registered! We will contact you the moment One Body Church goes live. God bless you, Pastor ' + pastor + '.');
+}
+</script>
+<!-- END CHURCH REGISTRATION SECTION -->
+
+</body>
+</html>
