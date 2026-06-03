@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>One Body TV — Bible Reader</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --black:#000000;--white:#FFFFFF;--gold:#FFD700;--gold2:#FFA500;
+  --gold-dim:rgba(255,215,0,0.12);--card:#0d0d0d;--border:#1a1a1a;--gray:#888888;
+}
+html,body{width:100%;min-height:100vh;background:var(--black);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden}
+
+/* AMBIENT */
+#broadcast{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#080600 0%,#000 70%)}
+.ambient{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:pulse 5s ease-in-out infinite;pointer-events:none}
+@keyframes pulse{0%,100%{opacity:0.4;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}}
+.stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.star{position:absolute;background:var(--gold);border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(0.5)}50%{opacity:0.7;transform:scale(1)}}
+.cross-bg{position:absolute;font-size:200px;opacity:0.025;top:50%;left:50%;transform:translate(-50%,-55%);pointer-events:none;user-select:none}
+
+/* HEADER */
+.broadcast-header{position:absolute;top:0;left:0;right:0;padding:env(safe-area-inset-top,20px) 24px 20px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,0.95) 0%,transparent 100%);z-index:10}
+.tv-logo{display:flex;align-items:center;gap:10px}
+.tv-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tv-logo-text{font-size:15px;font-weight:800;letter-spacing:0.08em}
+.tv-logo-text span{color:var(--gold)}
+.live-badge{display:flex;align-items:center;gap:6px;background:rgba(255,0,0,0.15);border:1px solid rgba(255,60,60,0.35);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:#ff6060;letter-spacing:0.1em}
+.live-dot{width:6px;height:6px;background:#ff4444;border-radius:50%;animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.1}}
+
+/* BOOK INFO */
+.book-info{position:absolute;top:82px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;font-weight:600;opacity:0.65}
+
+/* VERSE DISPLAY */
+.verse-display{width:100%;max-width:700px;padding:110px 28px 200px;text-align:center;position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.verse-number{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.25em;margin-bottom:20px;opacity:0.75}
+.verse-text{font-family:'Playfair Display',serif;font-size:clamp(21px,5vw,34px);line-height:1.8;color:var(--white);font-style:italic;min-height:100px;transition:opacity 0.4s}
+.verse-text .word{display:inline;transition:all 0.15s ease;border-radius:3px;padding:0 1px}
+.verse-text .word.speaking{color:var(--gold);text-shadow:0 0 25px rgba(255,215,0,0.9);font-weight:700}
+.verse-reference{margin-top:28px;font-size:14px;font-weight:700;color:var(--gold);letter-spacing:0.06em;opacity:0;transition:opacity 0.5s}
+.verse-reference.visible{opacity:1}
+
+/* AUDIO WAVE ANIMATION */
+.audio-wave{display:flex;align-items:center;justify-content:center;gap:4px;height:32px;margin-top:20px;opacity:0;transition:opacity 0.4s}
+.audio-wave.active{opacity:1}
+.wave-bar{width:4px;background:var(--gold);border-radius:4px;animation:wave var(--spd,0.8s) ease-in-out infinite var(--d,0s)}
+@keyframes wave{0%,100%{height:6px;opacity:0.4}50%{height:28px;opacity:1}}
+
+/* PROGRESS */
+.progress-wrap{position:absolute;bottom:165px;left:28px;right:28px;z-index:10}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:8px;font-weight:600}
+.progress-bar{height:3px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;transition:width 0.4s ease}
+
+/* CONTROLS */
+.controls{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(0deg,rgba(0,0,0,0.99) 0%,rgba(0,0,0,0.88) 100%);padding:14px 20px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);z-index:100;backdrop-filter:blur(20px)}
+
+/* VOICE CARDS */
+.voice-selector{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.voice-selector::-webkit-scrollbar{display:none}
+.voice-card{flex-shrink:0;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:9px 12px;cursor:pointer;transition:all 0.2s;text-align:center;min-width:78px}
+.voice-card.active{border-color:var(--gold);background:rgba(255,215,0,0.07)}
+.voice-card.active .voice-name{color:var(--gold)}
+.voice-avatar{font-size:20px;margin-bottom:3px;line-height:1}
+.voice-name{font-size:10px;font-weight:700;color:var(--white);letter-spacing:0.04em}
+.voice-type{font-size:9px;color:var(--gray);margin-top:1px}
+
+/* PLAYBACK */
+.playback{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
+.ctrl-btn{background:var(--card);border:1px solid var(--border);border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all 0.2s;flex-shrink:0;color:var(--white)}
+.ctrl-btn:active{border-color:var(--gold);transform:scale(0.94)}
+.play-btn{width:62px;height:62px;font-size:26px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:50%;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px rgba(255,215,0,0.35);flex-shrink:0;color:#000;font-weight:900}
+.play-btn:active{transform:scale(0.93)}
+.play-btn.playing{box-shadow:0 0 50px rgba(255,215,0,0.65);animation:play-pulse 2s ease-in-out infinite}
+@keyframes play-pulse{0%,100%{box-shadow:0 0 28px rgba(255,215,0,0.5)}50%{box-shadow:0 0 60px rgba(255,215,0,0.9)}}
+
+/* META ROW */
+.meta-row{display:flex;align-items:center;gap:8px}
+.speed-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--gold);font-weight:700;cursor:pointer;flex-shrink:0;transition:all 0.2s}
+.book-select{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--white);font-weight:600;cursor:pointer;outline:none;-webkit-appearance:none;flex:1;text-align:center}
+.chapter-select{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--white);font-weight:600;cursor:pointer;outline:none;-webkit-appearance:none;width:82px;text-align:center}
+
+/* SETUP SCREEN */
+#setup-screen{position:fixed;inset:0;background:var(--black);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto}
+.setup-logo{font-size:52px;margin-bottom:14px;text-align:center}
+.setup-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;text-align:center;margin-bottom:6px;color:var(--white)}
+.setup-sub{font-size:13px;color:var(--gray);text-align:center;line-height:1.7;margin-bottom:36px;max-width:300px}
+.setup-voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:360px;margin-bottom:28px}
+.setup-voice-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:20px 14px;cursor:pointer;text-align:center;transition:all 0.25s}
+.setup-voice-card.selected{border-color:var(--gold);background:rgba(255,215,0,0.06)}
+.setup-voice-avatar{font-size:38px;margin-bottom:10px}
+.setup-voice-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px}
+.setup-voice-desc{font-size:11px;color:var(--gray);line-height:1.5}
+.setup-btn{width:100%;max-width:360px;padding:17px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:16px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:0.03em}
+.setup-skip{font-size:12px;color:var(--gray);margin-top:14px;cursor:pointer;text-align:center}
+
+/* TOAST */
+.toast{position:fixed;top:90px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity 0.3s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1}
+
+/* VOICE ENGINE BADGE */
+.engine-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--gold);font-weight:600;margin-top:10px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen">
+  <div class="setup-logo">✝</div>
+  <div class="setup-title">One Body TV</div>
+  <div class="setup-sub">The Living Word — heard in voices anointed for every ear. Choose your reader.</div>
+  <div class="setup-voice-grid">
+    <div class="setup-voice-card" onclick="selectSetupVoice(0,this)">
+      <div class="setup-voice-avatar">👨🏾</div>
+      <div class="setup-voice-name">Elder David</div>
+      <div class="setup-voice-desc">Deep, powerful, prophetic. The voice of authority and fire.</div>
+    </div>
+    <div class="setup-voice-card" onclick="selectSetupVoice(1,this)">
+      <div class="setup-voice-avatar">👩🏾</div>
+      <div class="setup-voice-name">Sister Grace</div>
+      <div class="setup-voice-desc">Warm, gentle, nurturing. Like a mother reading to her children.</div>
+    </div>
+    <div class="setup-voice-card" onclick="selectSetupVoice(2,this)">
+      <div class="setup-voice-avatar">👦🏾</div>
+      <div class="setup-voice-name">Angel Samuel</div>
+      <div class="setup-voice-desc">Young, innocent, pure. An angelic boy's voice straight from Heaven.</div>
+    </div>
+    <div class="setup-voice-card" onclick="selectSetupVoice(3,this)">
+      <div class="setup-voice-avatar">👧🏾</div>
+      <div class="setup-voice-name">Angel Esther</div>
+      <div class="setup-voice-desc">Sweet, celestial, heaven-sent. A little girl's anointed voice.</div>
+    </div>
+  </div>
+  <button class="setup-btn" onclick="startBroadcast()">▶ Begin the Word</button>
+  <div class="setup-skip" onclick="startBroadcast()">Skip — I'll choose later</div>
+</div>
+
+<!-- BROADCAST SCREEN -->
+<div id="broadcast">
+  <div class="ambient"></div>
+  <div class="stars" id="stars"></div>
+  <div class="cross-bg">✝</div>
+
+  <div class="broadcast-header">
+    <div class="tv-logo">
+      <div class="tv-logo-icon">✝</div>
+      <div class="tv-logo-text">ONE BODY <span>TV</span></div>
+    </div>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+
+  <div class="book-info" id="book-info">Genesis • Chapter 1</div>
+
+  <div class="verse-display">
+    <div class="verse-number" id="verse-num">VERSE 1</div>
+    <div class="verse-text" id="verse-display">Press play to begin the Word of God</div>
+    <div class="verse-reference" id="verse-ref">Genesis 1:1</div>
+    <div class="audio-wave" id="audio-wave">
+      <div class="wave-bar" style="--spd:0.6s;--d:0s"></div>
+      <div class="wave-bar" style="--spd:0.8s;--d:0.1s"></div>
+      <div class="wave-bar" style="--spd:0.5s;--d:0.2s"></div>
+      <div class="wave-bar" style="--spd:0.9s;--d:0.05s"></div>
+      <div class="wave-bar" style="--spd:0.7s;--d:0.15s"></div>
+      <div class="wave-bar" style="--spd:0.6s;--d:0.25s"></div>
+      <div class="wave-bar" style="--spd:0.8s;--d:0.1s"></div>
+    </div>
+    <div class="engine-badge" onclick="showToast('Using best available voice engine on your device ✝')">🎙 AI Voice Engine</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-text">Verse 0 of 0</span>
+        <span id="current-voice-label">👨🏾 Elder David</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="voice-selector">
+      <div class="voice-card active" id="voice-0" onclick="switchVoice(0)">
+        <div class="voice-avatar">👨🏾</div>
+        <div class="voice-name">ELDER</div>
+        <div class="voice-type">David</div>
+      </div>
+      <div class="voice-card" id="voice-1" onclick="switchVoice(1)">
+        <div class="voice-avatar">👩🏾</div>
+        <div class="voice-name">SISTER</div>
+        <div class="voice-type">Grace</div>
+      </div>
+      <div class="voice-card" id="voice-2" onclick="switchVoice(2)">
+        <div class="voice-avatar">👦🏾</div>
+        <div class="voice-name">ANGEL</div>
+        <div class="voice-type">Samuel</div>
+      </div>
+      <div class="voice-card" id="voice-3" onclick="switchVoice(3)">
+        <div class="voice-avatar">👧🏾</div>
+        <div class="voice-name">ANGEL</div>
+        <div class="voice-type">Esther</div>
+      </div>
+    </div>
+
+    <div class="playback">
+      <div class="ctrl-btn" onclick="prevVerse()">⏮</div>
+      <div class="ctrl-btn" onclick="prevChapter()">⏪</div>
+      <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+      <div class="ctrl-btn" onclick="nextChapter()">⏩</div>
+      <div class="ctrl-btn" onclick="nextVerse()">⏭</div>
+    </div>
+
+    <div class="meta-row">
+      <div class="speed-btn" onclick="cycleSpeed()" id="speed-label">1×</div>
+      <select class="book-select" id="book-select" onchange="changeBook()"></select>
+      <select class="chapter-select" id="chapter-select" onchange="changeChapter()"></select>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ALL 66 BOOKS
+// ============================================================
+const ALL_BOOKS=[
+  {n:'Genesis',c:50},{n:'Exodus',c:40},{n:'Leviticus',c:27},{n:'Numbers',c:36},
+  {n:'Deuteronomy',c:34},{n:'Joshua',c:24},{n:'Judges',c:21},{n:'Ruth',c:4},
+  {n:'1 Samuel',c:31},{n:'2 Samuel',c:24},{n:'1 Kings',c:22},{n:'2 Kings',c:25},
+  {n:'1 Chronicles',c:29},{n:'2 Chronicles',c:36},{n:'Ezra',c:10},{n:'Nehemiah',c:13},
+  {n:'Esther',c:10},{n:'Job',c:42},{n:'Psalms',c:150},{n:'Proverbs',c:31},
+  {n:'Ecclesiastes',c:12},{n:'Song of Solomon',c:8},{n:'Isaiah',c:66},{n:'Jeremiah',c:52},
+  {n:'Lamentations',c:5},{n:'Ezekiel',c:48},{n:'Daniel',c:12},{n:'Hosea',c:14},
+  {n:'Joel',c:3},{n:'Amos',c:9},{n:'Obadiah',c:1},{n:'Jonah',c:4},{n:'Micah',c:7},
+  {n:'Nahum',c:3},{n:'Habakkuk',c:3},{n:'Zephaniah',c:3},{n:'Haggai',c:2},
+  {n:'Zechariah',c:14},{n:'Malachi',c:4},{n:'Matthew',c:28},{n:'Mark',c:16},
+  {n:'Luke',c:24},{n:'John',c:21},{n:'Acts',c:28},{n:'Romans',c:16},
+  {n:'1 Corinthians',c:16},{n:'2 Corinthians',c:13},{n:'Galatians',c:6},
+  {n:'Ephesians',c:6},{n:'Philippians',c:4},{n:'Colossians',c:4},
+  {n:'1 Thessalonians',c:5},{n:'2 Thessalonians',c:3},{n:'1 Timothy',c:6},
+  {n:'2 Timothy',c:4},{n:'Titus',c:3},{n:'Philemon',c:1},{n:'Hebrews',c:13},
+  {n:'James',c:5},{n:'1 Peter',c:5},{n:'2 Peter',c:3},{n:'1 John',c:5},
+  {n:'2 John',c:1},{n:'3 John',c:1},{n:'Jude',c:1},{n:'Revelation',c:22}
+];
+
+// ============================================================
+// VOICE PROFILES — tuned for maximum human realism
+// ============================================================
+const VOICES=[
+  {id:0,name:'Elder David',  avatar:'👨🏾',label:'👨🏾 Elder David',
+   pitch:0.72, rate:0.78, volume:1.0,
+   preferNames:['daniel','david','james','thomas','alex','oliver','george','fred','bruce','aaron','nathan','mark'],
+   gender:'male', note:'Deep prophetic'},
+  {id:1,name:'Sister Grace', avatar:'👩🏾',label:'👩🏾 Sister Grace',
+   pitch:1.08, rate:0.76, volume:1.0,
+   preferNames:['samantha','victoria','karen','moira','fiona','tessa','zira','grace','susan','lisa','emily','ava'],
+   gender:'female', note:'Warm nurturing'},
+  {id:2,name:'Angel Samuel', avatar:'👦🏾',label:'👦🏾 Angel Samuel',
+   pitch:1.50, rate:0.82, volume:1.0,
+   preferNames:['junior','boy','young','child','kid'],
+   gender:'male', note:'Young angelic'},
+  {id:3,name:'Angel Esther', avatar:'👧🏾',label:'👧🏾 Angel Esther',
+   pitch:1.65, rate:0.80, volume:1.0,
+   preferNames:['junior','girl','young','child','kid'],
+   gender:'female', note:'Sweet angelic'},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentVoiceIdx=parseInt(localStorage.getItem('obt_voice')||'0');
+let currentBookIdx=0;
+let currentChapterNum=1;
+let currentVerseIdx=0;
+let verses=[];
+let isPlaying=false;
+let allVoices=[];
+let speeds=[0.65,0.80,1.0,1.2,1.4];
+let speedLabels=['0.65×','0.8×','1×','1.2×','1.4×'];
+let speedIdx=2;
+let utterance=null;
+let setupDone=localStorage.getItem('obt_setup')==='1';
+let selectedSetupVoice=0;
+const CHAPTER_CACHE={};
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload=function(){
+  generateStars();
+  populateBookSelect();
+  initVoiceEngine();
+  if(setupDone){
+    document.getElementById('setup-screen').style.display='none';
+    highlightVoiceCard(currentVoiceIdx);
+  }
+  loadChapter();
+};
+
+function initVoiceEngine(){
+  const load=()=>{
+    allVoices=window.speechSynthesis.getVoices();
+    // Preload — iOS Safari requires this
+    if(allVoices.length===0) setTimeout(load,300);
+  };
+  load();
+  if(window.speechSynthesis.onvoiceschanged!==undefined){
+    window.speechSynthesis.onvoiceschanged=load;
+  }
+}
+
+function getBestVoice(profile){
+  if(!allVoices.length) allVoices=window.speechSynthesis.getVoices();
+  const pool=allVoices.filter(v=>v.lang.startsWith('en-')||v.lang==='en');
+  const source=pool.length?pool:allVoices;
+
+  // 1. Try name match first (most human-sounding named voices)
+  for(const pref of profile.preferNames){
+    const found=source.find(v=>v.name.toLowerCase().includes(pref));
+    if(found) return found;
+  }
+
+  // 2. Try gender match by common patterns
+  if(profile.gender==='male'){
+    const m=source.find(v=>/male|man|guy|david|james|mark|paul|john|alex|fred/i.test(v.name));
+    if(m) return m;
+  } else {
+    const f=source.find(v=>/female|woman|girl|sam|karen|lisa|emily|victoria|grace|fiona|zira|tessa/i.test(v.name));
+    if(f) return f;
+  }
+
+  // 3. Fallback — pick a decent default
+  const neural=source.find(v=>/neural|enhanced|premium|natural/i.test(v.name));
+  if(neural) return neural;
+  return source[profile.gender==='male'?0:Math.min(1,source.length-1)]||null;
+}
+
+// ============================================================
+// BOOK / CHAPTER SELECT
+// ============================================================
+function populateBookSelect(){
+  const sel=document.getElementById('book-select');
+  ALL_BOOKS.forEach((b,i)=>{
+    const o=document.createElement('option');
+    o.value=i;o.textContent=b.n;sel.appendChild(o);
+  });
+}
+
+function changeBook(){
+  currentBookIdx=parseInt(document.getElementById('book-select').value);
+  currentChapterNum=1;
+  updateChapterSelect();
+  loadChapter();
+}
+
+function updateChapterSelect(){
+  const sel=document.getElementById('chapter-select');
+  sel.innerHTML='';
+  for(let i=1;i<=ALL_BOOKS[currentBookIdx].c;i++){
+    const o=document.createElement('option');
+    o.value=i;o.textContent='Ch '+i;
+    if(i===currentChapterNum)o.selected=true;
+    sel.appendChild(o);
+  }
+}
+
+function changeChapter(){
+  currentChapterNum=parseInt(document.getElementById('chapter-select').value);
+  loadChapter();
+}
+
+// ============================================================
+// CHAPTER LOADER — bible-api.com (free KJV)
+// ============================================================
+function loadChapter(){
+  stopSpeech();
+  const book=ALL_BOOKS[currentBookIdx];
+  const key=book.n+currentChapterNum;
+  document.getElementById('book-info').textContent=book.n+' • Chapter '+currentChapterNum;
+  document.getElementById('book-select').value=currentBookIdx;
+  updateChapterSelect();
+
+  if(CHAPTER_CACHE[key]){
+    verses=CHAPTER_CACHE[key];
+    initVerseDisplay();
+    return;
+  }
+
+  // Show loading state
+  document.getElementById('verse-display').textContent='Loading the Word...';
+
+  const bookEncoded=encodeURIComponent(book.n);
+  fetch('https://bible-api.com/'+bookEncoded+'+'+currentChapterNum+'?translation=kjv')
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.verses&&data.verses.length){
+        verses=data.verses.map(v=>v.text.replace(/\n/g,' ').trim());
+        CHAPTER_CACHE[key]=verses;
+      } else {
+        verses=[book.n+' Chapter '+currentChapterNum+'. The Word of God endures forever.'];
+      }
+      initVerseDisplay();
+    })
+    .catch(()=>{
+      verses=[book.n+' Chapter '+currentChapterNum+'. The grass withereth, the flower fadeth: but the word of our God shall stand for ever. Isaiah forty verse eight.'];
+      initVerseDisplay();
+    });
+}
+
+function initVerseDisplay(){
+  currentVerseIdx=0;
+  showVerse(0);
+  if(isPlaying)speakVerse(0);
+}
+
+// ============================================================
+// VERSE DISPLAY
+// ============================================================
+function showVerse(idx){
+  if(!verses.length)return;
+  idx=Math.max(0,Math.min(idx,verses.length-1));
+  currentVerseIdx=idx;
+  const text=verses[idx];
+  const book=ALL_BOOKS[currentBookIdx];
+  const ref=book.n+' '+currentChapterNum+':'+(idx+1);
+
+  // Wrap each word in a span for highlighting
+  const words=text.split(' ');
+  const html=words.map((w,i)=>`<span class="word" id="wrd${i}">${w}</span>`).join(' ');
+  document.getElementById('verse-display').innerHTML=html;
+  document.getElementById('verse-num').textContent='VERSE '+(idx+1);
+  document.getElementById('verse-ref').textContent=ref;
+  document.getElementById('verse-ref').className='verse-reference visible';
+
+  const pct=verses.length>1?Math.round((idx/(verses.length-1))*100):100;
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-text').textContent='Verse '+(idx+1)+' of '+verses.length;
+  document.getElementById('current-voice-label').textContent=VOICES[currentVoiceIdx].label;
+}
+
+// ============================================================
+// SPEECH ENGINE — Human-tuned
+// ============================================================
+function speakVerse(idx){
+  if(!verses.length)return;
+  stopSpeech();
+
+  const text=verses[idx];
+  const profile=VOICES[currentVoiceIdx];
+
+  utterance=new SpeechSynthesisUtterance(text);
+  const voice=getBestVoice(profile);
+  if(voice)utterance.voice=voice;
+
+  // Human-realism tuning
+  utterance.pitch=profile.pitch;
+  utterance.rate=profile.rate*(speeds[speedIdx]/1.0);
+  utterance.volume=profile.volume;
+
+  // Word-by-word gold highlight
+  let wordIdx=0;
+  utterance.onboundary=function(e){
+    if(e.name==='word'){
+      document.querySelectorAll('#verse-display .word').forEach(w=>w.classList.remove('speaking'));
+      const el=document.getElementById('wrd'+wordIdx);
+      if(el){el.classList.add('speaking');wordIdx++;}
+    }
+  };
+
+  utterance.onend=function(){
+    document.querySelectorAll('#verse-display .word').forEach(w=>w.classList.remove('speaking'));
+    wordIdx=0;
+    if(!isPlaying)return;
+    if(idx+1<verses.length){
+      showVerse(idx+1);
+      setTimeout(()=>speakVerse(idx+1),400); // natural pause between verses
+    } else {
+      // Auto-advance to next chapter
+      if(currentChapterNum<ALL_BOOKS[currentBookIdx].c){
+        currentChapterNum++;
+        showToast('📖 '+ALL_BOOKS[currentBookIdx].n+' Chapter '+currentChapterNum);
+        loadChapter();
+      } else if(currentBookIdx<ALL_BOOKS.length-1){
+        currentBookIdx++;
+        currentChapterNum=1;
+        document.getElementById('book-select').value=currentBookIdx;
+        showToast('📖 '+ALL_BOOKS[currentBookIdx].n);
+        loadChapter();
+      } else {
+        stopSpeech();
+        showToast('You have completed the entire Bible! Glory to God! ✝');
+      }
+    }
+  };
+
+  utterance.onerror=function(e){
+    if(isPlaying&&idx+1<verses.length){
+      showVerse(idx+1);
+      speakVerse(idx+1);
+    }
+  };
+
+  // iOS Safari keep-alive fix
+  window.speechSynthesis.cancel();
+  setTimeout(()=>window.speechSynthesis.speak(utterance),50);
+}
+
+function stopSpeech(){
+  window.speechSynthesis.cancel();
+  utterance=null;
+  document.querySelectorAll('#verse-display .word').forEach(w=>w.classList.remove('speaking'));
+  document.getElementById('audio-wave').classList.remove('active');
+}
+
+function togglePlay(){
+  isPlaying=!isPlaying;
+  const btn=document.getElementById('play-btn');
+  if(isPlaying){
+    btn.textContent='⏸';
+    btn.classList.add('playing');
+    document.getElementById('audio-wave').classList.add('active');
+    // iOS requires user gesture to unlock audio — we do this on tap
+    window.speechSynthesis.cancel();
+    speakVerse(currentVerseIdx);
+    showToast(VOICES[currentVoiceIdx].avatar+' '+VOICES[currentVoiceIdx].name+' is reading the Word...');
+  } else {
+    btn.textContent='▶';
+    btn.classList.remove('playing');
+    stopSpeech();
+  }
+}
+
+function nextVerse(){
+  if(currentVerseIdx<verses.length-1){
+    stopSpeech();
+    showVerse(currentVerseIdx+1);
+    if(isPlaying)speakVerse(currentVerseIdx);
+  } else nextChapter();
+}
+
+function prevVerse(){
+  if(currentVerseIdx>0){
+    stopSpeech();
+    showVerse(currentVerseIdx-1);
+    if(isPlaying)speakVerse(currentVerseIdx);
+  }
+}
+
+function nextChapter(){
+  stopSpeech();
+  if(currentChapterNum<ALL_BOOKS[currentBookIdx].c)currentChapterNum++;
+  else if(currentBookIdx<ALL_BOOKS.length-1){currentBookIdx++;currentChapterNum=1;document.getElementById('book-select').value=currentBookIdx;}
+  loadChapter();
+}
+
+function prevChapter(){
+  stopSpeech();
+  if(currentChapterNum>1)currentChapterNum--;
+  else if(currentBookIdx>0){currentBookIdx--;currentChapterNum=ALL_BOOKS[currentBookIdx].c;document.getElementById('book-select').value=currentBookIdx;}
+  loadChapter();
+}
+
+function cycleSpeed(){
+  speedIdx=(speedIdx+1)%speeds.length;
+  document.getElementById('speed-label').textContent=speedLabels[speedIdx];
+  if(isPlaying){stopSpeech();speakVerse(currentVerseIdx);}
+  showToast('Speed: '+speedLabels[speedIdx]);
+}
+
+// ============================================================
+// VOICE SWITCH
+// ============================================================
+function switchVoice(idx){
+  currentVoiceIdx=idx;
+  highlightVoiceCard(idx);
+  localStorage.setItem('obt_voice',idx);
+  document.getElementById('current-voice-label').textContent=VOICES[idx].label;
+  if(isPlaying){stopSpeech();speakVerse(currentVerseIdx);}
+  showToast(VOICES[idx].avatar+' '+VOICES[idx].name+' — activated');
+}
+
+function highlightVoiceCard(idx){
+  for(let i=0;i<4;i++){
+    const el=document.getElementById('voice-'+i);
+    if(el)el.className='voice-card'+(i===idx?' active':'');
+  }
+}
+
+// ============================================================
+// SETUP
+// ============================================================
+function selectSetupVoice(idx,el){
+  selectedSetupVoice=idx;
+  document.querySelectorAll('.setup-voice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function startBroadcast(){
+  currentVoiceIdx=selectedSetupVoice;
+  localStorage.setItem('obt_voice',selectedSetupVoice);
+  localStorage.setItem('obt_setup','1');
+  document.getElementById('setup-screen').style.display='none';
+  highlightVoiceCard(selectedSetupVoice);
+  document.getElementById('current-voice-label').textContent=VOICES[selectedSetupVoice].label;
+  // iOS audio unlock
+  const unlock=new SpeechSynthesisUtterance('');
+  window.speechSynthesis.speak(unlock);
+  window.speechSynthesis.cancel();
+  showToast('Welcome to One Body TV ✝');
+}
+
+// ============================================================
+// STARS & TOAST
+// ============================================================
+function generateStars(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<70;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:${Math.random()*4}s;`;
+    c.appendChild(s);
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// Keep speech alive on iOS (Safari pauses after 10-15s)
+setInterval(()=>{
+  if(isPlaying&&window.speechSynthesis.paused){
+    window.speechSynthesis.resume();
+  }
+},5000);
+</script>
+</body>
+</html>
